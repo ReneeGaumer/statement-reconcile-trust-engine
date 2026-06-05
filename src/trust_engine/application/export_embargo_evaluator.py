@@ -1,4 +1,4 @@
-﻿from trust_engine.exceptions.severity import Severity
+from trust_engine.exceptions.severity import Severity
 
 class ExportEmbargoEvaluator:
     def should_embargo(self, severities):

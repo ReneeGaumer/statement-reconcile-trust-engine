@@ -7,27 +7,29 @@ from trust_engine.infrastructure.decision_ledger_repository import DecisionLedge
 from trust_engine.infrastructure.evidence_lineage_repository import EvidenceLineageRepository
 from trust_engine.infrastructure.audit_package_repository import AuditPackageRepository
 
-trust_record = TrustRecordFactory().create(100.0, "CLEAN_EXPORT")
-evidence = EvidenceLineageFactory().create("statement.pdf")
-ledger = DecisionLedgerFactory().create(trust_record.trust_record_id)
-audit = AuditPackageFactory().create(trust_record.trust_record_id, evidence.lineage_id, ledger.decision_id)
 
-repos = [
-    (TrustRecordRepository(), trust_record, trust_record.trust_record_id),
-    (EvidenceLineageRepository(), evidence, evidence.lineage_id),
-    (DecisionLedgerRepository(), ledger, ledger.decision_id),
-    (AuditPackageRepository(), audit, audit.audit_package_id),
-]
-
-for repo, record, record_id in repos:
-    saved = repo.save(record)
-    loaded = repo.get(record_id)
-    print(saved)
-    assert loaded == record
-    try:
-        repo.save(record)
-        raise AssertionError("Overwrite should have failed")
-    except ValueError:
-        print("Immutable save protection confirmed", record_id)
-
-print("PASS")
+def test_authoritative_repositories():
+    
+    trust_record = TrustRecordFactory().create(100.0, "CLEAN_EXPORT")
+    evidence = EvidenceLineageFactory().create("statement.pdf")
+    ledger = DecisionLedgerFactory().create(trust_record.trust_record_id)
+    audit = AuditPackageFactory().create(trust_record.trust_record_id, evidence.lineage_id, ledger.decision_id)
+    
+    repos = [
+        (TrustRecordRepository(), trust_record, trust_record.trust_record_id),
+        (EvidenceLineageRepository(), evidence, evidence.lineage_id),
+        (DecisionLedgerRepository(), ledger, ledger.decision_id),
+        (AuditPackageRepository(), audit, audit.audit_package_id),
+    ]
+    
+    for repo, record, record_id in repos:
+        saved = repo.save(record)
+        loaded = repo.get(record_id)
+        print(saved)
+        assert loaded == record
+        try:
+            repo.save(record)
+            raise AssertionError("Overwrite should have failed")
+        except ValueError:
+            print("Immutable save protection confirmed", record_id)
+    

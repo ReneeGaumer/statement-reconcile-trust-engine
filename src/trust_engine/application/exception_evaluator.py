@@ -1,4 +1,4 @@
-﻿from trust_engine.exceptions.severity import Severity
+from trust_engine.exceptions.severity import Severity
 
 class ExceptionEvaluator:
     def penalty(self, severity: Severity) -> float:

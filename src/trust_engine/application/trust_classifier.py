@@ -1,4 +1,4 @@
-﻿from trust_engine.exceptions.trust_classification import TrustClassification
+from trust_engine.exceptions.trust_classification import TrustClassification
 
 class TrustClassifier:
     def classify(self, score: float, embargo: bool = False):
