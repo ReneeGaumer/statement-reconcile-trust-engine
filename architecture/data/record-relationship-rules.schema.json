@@ -1,0 +1,9 @@
+{
+  "trust_record_references_evidence_lineage": true,
+  "decision_ledger_references_trust_record": true,
+  "decision_ledger_references_evidence_lineage": true,
+  "audit_package_references_decision_ledger": true,
+  "audit_package_references_evidence_lineage": true,
+  "exceptions_linked_to_trust_record": true,
+  "orphan_records_not_permitted": true
+}

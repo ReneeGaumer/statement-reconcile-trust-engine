@@ -1,0 +1,7 @@
+{
+  "original_value_required": true,
+  "corrected_value_required": true,
+  "correction_reason_required": true,
+  "correction_timestamp_required": true,
+  "original_value_immutable": true
+}

@@ -1,0 +1,8 @@
+{
+  "CRITICAL": -100,
+  "HIGH": -40,
+  "WARNING": -15,
+  "INFO": -5,
+  "multiple_exceptions_accumulate": true,
+  "minimum_score": 0
+}

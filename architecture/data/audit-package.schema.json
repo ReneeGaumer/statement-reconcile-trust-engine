@@ -1,0 +1,10 @@
+{
+  "package_id_required": true,
+  "trust_record_reference_required": true,
+  "decision_ledger_reference_required": true,
+  "evidence_lineage_reference_required": true,
+  "generated_timestamp_required": true,
+  "reconstructable_independently": true,
+  "courtroom_test_required": true,
+  "authoritative": true
+}

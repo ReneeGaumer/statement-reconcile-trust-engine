@@ -1,0 +1,6 @@
+{
+  "classification_id": "EXPORT_EMBARGO",
+  "severity": "CRITICAL",
+  "hard_stop": true,
+  "description": "Export prohibited due to unresolved trust failures"
+}

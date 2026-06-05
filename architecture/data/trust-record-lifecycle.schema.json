@@ -1,0 +1,10 @@
+{
+  "NEW": true,
+  "EVIDENCE_VALIDATED": true,
+  "TRUST_EVALUATED": true,
+  "CLASSIFIED": true,
+  "EXPORT_DECISION_COMPLETE": true,
+  "AUDIT_PACKAGE_GENERATED": true,
+  "FINALIZED": true,
+  "reopen_not_permitted": true
+}

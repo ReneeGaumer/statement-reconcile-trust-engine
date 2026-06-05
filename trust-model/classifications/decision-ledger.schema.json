@@ -1,0 +1,5 @@
+{
+  "ledger_id": "DECISION-LEDGER",
+  "authoritative": true,
+  "description": "Immutable record of trust decisions and supporting rationale"
+}

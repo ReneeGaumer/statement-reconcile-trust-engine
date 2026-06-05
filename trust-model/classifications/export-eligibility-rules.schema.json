@@ -1,0 +1,6 @@
+{
+  "hard_stop_exception_overrides_score": true,
+  "critical_exception_causes_embargo": true,
+  "classification_after_embargo_check": true,
+  "export_eligibility_determined_last": true
+}

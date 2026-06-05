@@ -1,0 +1,10 @@
+{
+  "decision_id_required": true,
+  "record_id_required": true,
+  "decision_timestamp_required": true,
+  "deterministic_rule_reference_required": true,
+  "evidence_lineage_reference_required": true,
+  "trust_score_required": true,
+  "trust_classification_required": true,
+  "decision_rationale_required": true
+}

@@ -1,0 +1,8 @@
+{
+  "score_minimum": 0,
+  "score_maximum": 100,
+  "evidence_based": true,
+  "deterministic": true,
+  "exception_sensitive": true,
+  "reproducible": true
+}

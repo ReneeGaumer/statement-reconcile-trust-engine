@@ -1,0 +1,9 @@
+{
+  "evidence_required_for_trust": true,
+  "missing_evidence_generates_exception": true,
+  "unverifiable_evidence_generates_exception": true,
+  "evidence_must_be_traceable": true,
+  "evidence_must_be_reproducible": true,
+  "insufficient_evidence_blocks_clean_export": true,
+  "trust_never_assumed": true
+}

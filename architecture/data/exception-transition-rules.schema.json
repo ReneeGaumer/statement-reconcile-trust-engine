@@ -1,0 +1,9 @@
+{
+  "OPEN_to_UNDER_INVESTIGATION": true,
+  "UNDER_INVESTIGATION_to_EVIDENCE_REQUESTED": true,
+  "EVIDENCE_REQUESTED_to_CORRECTIVE_ACTION_PENDING": true,
+  "CORRECTIVE_ACTION_PENDING_to_RESOLVED": true,
+  "RESOLVED_to_CLOSED": true,
+  "CLOSED_to_OPEN": false,
+  "invalid_transitions_not_permitted": true
+}

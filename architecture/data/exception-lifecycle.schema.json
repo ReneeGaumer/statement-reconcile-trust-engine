@@ -1,0 +1,9 @@
+{
+  "OPEN": true,
+  "UNDER_INVESTIGATION": true,
+  "EVIDENCE_REQUESTED": true,
+  "CORRECTIVE_ACTION_PENDING": true,
+  "RESOLVED": true,
+  "CLOSED": true,
+  "reopen_allowed": true
+}

@@ -1,0 +1,10 @@
+{
+  "decision_rationale_required": true,
+  "rule_references_required": true,
+  "evidence_references_required": true,
+  "exception_references_required": true,
+  "unsupported_conclusions_not_permitted": true,
+  "rationale_must_support_classification": true,
+  "rationale_must_support_export_decision": true,
+  "courtroom_test_reconstruction_required": true
+}

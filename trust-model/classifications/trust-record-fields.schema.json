@@ -1,0 +1,9 @@
+{
+  "record_id_required": true,
+  "trust_classification_required": true,
+  "trust_score_required": true,
+  "evidence_lineage_required": true,
+  "decision_ledger_required": true,
+  "audit_package_required": true,
+  "export_eligibility_required": true
+}

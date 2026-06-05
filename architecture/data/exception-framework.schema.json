@@ -1,0 +1,9 @@
+{
+  "exception_id": "EX-000001",
+  "severity": "CRITICAL",
+  "trust_impact": -100,
+  "requires_evidence": true,
+  "requires_root_cause": true,
+  "requires_corrective_action": true,
+  "requires_lifecycle_status": true
+}

@@ -1,0 +1,7 @@
+{
+  "governance_layer_frozen": true,
+  "policy_contracts_authoritative": true,
+  "implementation_must_conform": true,
+  "schema_changes_require_versioning": true,
+  "courtroom_test_principle_enforced": true
+}

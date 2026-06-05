@@ -1,0 +1,11 @@
+{
+  "exception_id_required": true,
+  "record_id_required": true,
+  "severity_required": true,
+  "rule_reference_required": true,
+  "evidence_reference_required": true,
+  "description_required": true,
+  "created_timestamp_required": true,
+  "status_required": true,
+  "authoritative": true
+}

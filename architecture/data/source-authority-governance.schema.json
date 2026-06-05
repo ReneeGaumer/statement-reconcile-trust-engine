@@ -1,0 +1,9 @@
+{
+  "authority_ranking_required": true,
+  "conflicting_sources_generate_exception": true,
+  "highest_authority_source_preferred": true,
+  "authority_decision_recorded": true,
+  "authority_decision_auditable": true,
+  "unranked_sources_not_authoritative": true,
+  "deterministic_source_selection_required": true
+}

@@ -1,0 +1,10 @@
+{
+  "minimum_trust_score": 0,
+  "maximum_trust_score": 100,
+  "trust_score_must_be_evidence_derived": true,
+  "manual_score_override_not_permitted": true,
+  "trust_score_reproducible": true,
+  "trust_score_recorded_in_decision_ledger": true,
+  "trust_score_included_in_audit_package": true,
+  "deterministic_calculation_required": true
+}

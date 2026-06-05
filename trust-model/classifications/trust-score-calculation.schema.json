@@ -1,0 +1,7 @@
+{
+  "starts_at": 100,
+  "deductions_exception_based": true,
+  "additions_not_permitted": true,
+  "fully_reproducible": true,
+  "calculation_path_required": true
+}

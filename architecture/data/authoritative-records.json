@@ -1,0 +1,6 @@
+{
+  "trust_record_version": "1.0.0",
+  "evidence_lineage_version": "1.0.0",
+  "decision_ledger_version": "1.0.0",
+  "audit_package_version": "1.0.0"
+}

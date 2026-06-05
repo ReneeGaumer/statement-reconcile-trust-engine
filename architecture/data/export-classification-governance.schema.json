@@ -1,0 +1,10 @@
+{
+  "single_final_classification_required": true,
+  "classifications_mutually_exclusive": true,
+  "export_embargo_overrides_all_other_classifications": true,
+  "classification_recorded_in_decision_ledger": true,
+  "classification_included_in_audit_package": true,
+  "classification_determined_after_exception_evaluation": true,
+  "classification_determined_before_export_generation": true,
+  "deterministic_classification_required": true
+}

@@ -1,0 +1,9 @@
+{
+  "original_value_immutable": true,
+  "corrections_require_original_value": true,
+  "corrections_require_corrected_value": true,
+  "corrections_require_reason": true,
+  "corrections_require_timestamp": true,
+  "deletion_not_permitted": true,
+  "full_history_preserved": true
+}

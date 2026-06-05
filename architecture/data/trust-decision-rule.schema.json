@@ -1,0 +1,6 @@
+{
+  "deterministic_rule_required": true,
+  "evidence_source_required": true,
+  "calculation_path_required": true,
+  "otherwise": "GENERATE_EXCEPTION"
+}

@@ -1,0 +1,10 @@
+{
+  "corrections_require_exception_reference": true,
+  "corrections_require_evidence_reference": true,
+  "corrections_require_authorization": true,
+  "corrections_require_rationale": true,
+  "corrections_require_timestamp": true,
+  "corrections_preserve_original_value": true,
+  "unauthorized_corrections_not_permitted": true,
+  "deterministic_correction_workflow_required": true
+}

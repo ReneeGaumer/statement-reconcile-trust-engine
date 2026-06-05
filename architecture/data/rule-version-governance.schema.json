@@ -1,0 +1,9 @@
+{
+  "rule_version_required": true,
+  "effective_timestamp_required": true,
+  "decision_records_rule_version": true,
+  "audit_package_records_rule_version": true,
+  "historical_rule_replay_supported": true,
+  "rule_changes_auditable": true,
+  "deterministic_reconstruction_required": true
+}

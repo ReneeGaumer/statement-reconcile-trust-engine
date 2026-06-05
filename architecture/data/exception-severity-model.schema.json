@@ -1,0 +1,8 @@
+{
+  "CRITICAL": "EXPORT_EMBARGO",
+  "HIGH": "TRUST_SCORE_DEDUCTION",
+  "WARNING": "EXPORT_WITH_WARNINGS",
+  "INFO": "AUDIT_ONLY",
+  "severity_order_deterministic": true,
+  "critical_is_hard_stop": true
+}

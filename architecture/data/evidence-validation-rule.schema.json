@@ -1,0 +1,9 @@
+{
+  "source_document_required": true,
+  "source_location_required": true,
+  "page_reference_required": true,
+  "evidence_hash_required": true,
+  "chain_of_custody_required": true,
+  "all_requirements_must_pass": true,
+  "otherwise": "GENERATE_EXCEPTION"
+}

@@ -1,0 +1,10 @@
+{
+  "lineage_id_required": true,
+  "source_document_required": true,
+  "source_location_required": true,
+  "page_reference_required": true,
+  "evidence_timestamp_required": true,
+  "evidence_hash_required": true,
+  "chain_of_custody_required": true,
+  "authoritative": true
+}

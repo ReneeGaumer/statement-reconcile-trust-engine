@@ -1,0 +1,8 @@
+{
+  "100": "CLEAN_EXPORT",
+  "85-99": "EXPORT_WITH_WARNINGS",
+  "60-84": "PARTIAL_EXPORT",
+  "1-59": "UNSAFE_EXPORT",
+  "0": "EXPORT_EMBARGO",
+  "deterministic": true
+}
