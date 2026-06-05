@@ -2,3 +2,8 @@ backups/
  
 __pycache__/ 
 *.pyc
+ 
+.coverage 
+htmlcov/ 
+.pytest_cache/ 
+*.bak
