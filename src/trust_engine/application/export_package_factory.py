@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 from uuid import uuid4
 from trust_engine.domain.authoritative_models import ExportPackage
 
@@ -9,5 +9,5 @@ class ExportPackageFactory:
             trust_record_reference=trust_record_reference,
             audit_package_reference=audit_package_reference,
             export_classification=export_classification,
-            created_timestamp=datetime.utcnow()
+            created_timestamp=datetime.now(UTC)
         )

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 from uuid import uuid4
 from trust_engine.domain.authoritative_models import AuditPackage
 
@@ -9,5 +9,5 @@ class AuditPackageFactory:
             trust_record_reference=trust_record_reference,
             evidence_lineage_reference=evidence_lineage_reference,
             decision_ledger_reference=decision_ledger_reference,
-            created_timestamp=datetime.utcnow()
+            created_timestamp=datetime.now(UTC)
         )

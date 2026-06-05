@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 from uuid import uuid4
 from trust_engine.domain.authoritative_models import EvidenceLineageRecord
 
@@ -7,5 +7,5 @@ class EvidenceLineageFactory:
         return EvidenceLineageRecord(
             lineage_id=str(uuid4()),
             source_document_reference=source_document_reference,
-            acquisition_timestamp=datetime.utcnow()
+            acquisition_timestamp=datetime.now(UTC)
         )
