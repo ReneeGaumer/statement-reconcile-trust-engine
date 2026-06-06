@@ -59,7 +59,15 @@ class TrustEngine:
         embargo = self.embargo_evaluator.should_embargo(severities)
         score = self.score_calculator.calculate(evidence_count, total_penalty)
         classification = self.classifier.classify(score, embargo)
-        trust_record = self.record_factory.create(score, classification.value)
+        trust_record = self.record_factory.create(
+            score,
+            classification.value,
+            evidence_count=evidence_count,
+            exception_count=len(exception_records),
+            exception_penalty=total_penalty,
+            embargo=embargo,
+            trust_calculation_rule="EVIDENCE_COUNT_TIMES_TEN_MINUS_EXCEPTION_PENALTY"
+        )
         decision_ledger = self.decision_ledger_factory.create(trust_record.trust_record_id)
         decision_path = [
             {

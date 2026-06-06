@@ -6,6 +6,11 @@ class TrustRecord:
     trust_record_id:str
     trust_score:float
     trust_classification:str
+    evidence_count:int
+    exception_count:int
+    exception_penalty:float
+    embargo:bool
+    trust_calculation_rule:str
     created_timestamp:datetime
 
 @dataclass
