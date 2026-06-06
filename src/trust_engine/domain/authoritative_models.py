@@ -92,3 +92,12 @@ class RuleVersionRecord:
     effective_timestamp:datetime
     rule_fingerprint:str
     predecessor_version:str
+
+
+@dataclass
+class RuleApprovalRecord:
+    approval_id:str
+    rule_version_reference:str
+    approver:str
+    approval_timestamp:datetime
+    approval_status:str
