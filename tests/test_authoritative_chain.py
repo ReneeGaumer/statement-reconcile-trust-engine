@@ -29,3 +29,10 @@ def test_authoritative_chain_export_embargo():
     assert export.audit_package_reference == audit.audit_package_id
     assert export.export_classification == "EXPORT_EMBARGO"
     assert trust_record.trust_classification == "EXPORT_EMBARGO"
+    assert trust_record.evidence_lineage_reference == lineage.lineage_id
+    assert trust_record.exception_record_references == [exceptions[0].exception_id]
+
+    explanation = result["decision_explanation"]
+    assert engine.decision_explanation_repository.get(explanation.decision_explanation_id) == explanation
+    assert explanation.trust_record_reference == trust_record.trust_record_id
+    assert explanation.decision_path[-1]["output"] == trust_record.trust_classification
