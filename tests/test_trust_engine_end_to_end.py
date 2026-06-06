@@ -17,6 +17,8 @@ def test_trust_engine_end_to_end_clean_export():
     assert clean["embargo"] is False
     assert ledger.trust_record_reference == record.trust_record_id
     assert explanation.trust_record_reference == record.trust_record_id
+    assert record.evidence_lineage_reference == lineage.lineage_id
+    assert record.exception_record_references == []
 
 
 def test_trust_engine_end_to_end_export_embargo():
@@ -33,3 +35,5 @@ def test_trust_engine_end_to_end_export_embargo():
     assert embargoed["exception_penalty"] == 50.0
     assert embargo_ledger.trust_record_reference == embargo_record.trust_record_id
     assert embargo_explanation.embargo is True
+    assert embargo_record.evidence_lineage_reference == embargo_lineage.lineage_id
+    assert embargo_record.exception_record_references == [embargoed["exception_records"][0].exception_id]

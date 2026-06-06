@@ -11,6 +11,8 @@ class TrustRecord:
     exception_penalty:float
     embargo:bool
     trust_calculation_rule:str
+    evidence_lineage_reference:str
+    exception_record_references:list
     created_timestamp:datetime
 
 @dataclass

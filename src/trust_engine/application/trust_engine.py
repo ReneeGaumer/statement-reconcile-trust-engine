@@ -66,7 +66,9 @@ class TrustEngine:
             exception_count=len(exception_records),
             exception_penalty=total_penalty,
             embargo=embargo,
-            trust_calculation_rule="EVIDENCE_COUNT_TIMES_TEN_MINUS_EXCEPTION_PENALTY"
+            trust_calculation_rule="EVIDENCE_COUNT_TIMES_TEN_MINUS_EXCEPTION_PENALTY",
+            evidence_lineage_reference=evidence_lineage.lineage_id,
+            exception_record_references=[record.exception_id for record in exception_records]
         )
         decision_ledger = self.decision_ledger_factory.create(trust_record.trust_record_id)
         decision_path = [
