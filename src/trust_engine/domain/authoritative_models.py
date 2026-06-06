@@ -82,3 +82,13 @@ class ExportPackage:
     audit_package_reference:str
     export_classification:str
     created_timestamp:datetime
+
+
+@dataclass
+class RuleVersionRecord:
+    rule_version_id:str
+    rule_name:str
+    rule_status:str
+    effective_timestamp:datetime
+    rule_fingerprint:str
+    predecessor_version:str
