@@ -24,6 +24,7 @@ class DecisionExplanationRecord:
     embargo:bool
     trust_score:float
     trust_classification:str
+    decision_path:list
     created_timestamp:datetime
 
 @dataclass

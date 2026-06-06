@@ -52,7 +52,14 @@ class TrustEngine:
         classification = self.classifier.classify(score, embargo)
         trust_record = self.record_factory.create(score, classification.value)
         decision_ledger = self.decision_ledger_factory.create(trust_record.trust_record_id)
-        decision_explanation = self.decision_explanation_factory.create(trust_record.trust_record_id, evidence_count, len(exception_records), total_penalty, embargo, score, classification.value)
+        decision_path = [
+            "EVIDENCE_LINEAGE_CREATED",
+            "EXCEPTION_RULES_EVALUATED",
+            "TRUST_SCORE_CALCULATED",
+            "EXPORT_EMBARGO_EVALUATED",
+            "TRUST_CLASSIFICATION_ASSIGNED"
+        ]
+        decision_explanation = self.decision_explanation_factory.create(trust_record.trust_record_id, evidence_count, len(exception_records), total_penalty, embargo, score, classification.value, decision_path)
         audit_package = self.audit_package_factory.create(trust_record.trust_record_id, evidence_lineage.lineage_id, decision_ledger.decision_id)
         self.evidence_lineage_repository.save(evidence_lineage)
         self.trust_record_repository.save(trust_record)
