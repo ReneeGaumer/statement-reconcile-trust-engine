@@ -15,6 +15,18 @@ class DecisionLedgerEntry:
     decision_timestamp:datetime
 
 @dataclass
+class DecisionExplanationRecord:
+    decision_explanation_id:str
+    trust_record_reference:str
+    evidence_count:int
+    exception_count:int
+    exception_penalty:float
+    embargo:bool
+    trust_score:float
+    trust_classification:str
+    created_timestamp:datetime
+
+@dataclass
 class EvidenceLineageRecord:
     lineage_id:str
     source_document_reference:str
