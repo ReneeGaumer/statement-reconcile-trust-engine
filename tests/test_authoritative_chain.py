@@ -26,6 +26,7 @@ def test_authoritative_chain_export_embargo():
     assert audit.trust_record_reference == trust_record.trust_record_id
     assert audit.evidence_lineage_reference == lineage.lineage_id
     assert audit.decision_ledger_reference == ledger.decision_id
+    assert audit.decision_explanation_reference == result["decision_explanation"].decision_explanation_id
     assert export.trust_record_reference == trust_record.trust_record_id
     assert export.audit_package_reference == audit.audit_package_id
     assert export.export_classification == "EXPORT_EMBARGO"

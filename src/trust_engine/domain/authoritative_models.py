@@ -54,6 +54,7 @@ class AuditPackage:
     trust_record_reference:str
     evidence_lineage_reference:str
     decision_ledger_reference:str
+    decision_explanation_reference:str
     created_timestamp:datetime
 
 
