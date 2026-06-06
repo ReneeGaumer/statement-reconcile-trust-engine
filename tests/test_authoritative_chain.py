@@ -37,4 +37,5 @@ def test_authoritative_chain_export_embargo():
     explanation = result["decision_explanation"]
     assert engine.decision_explanation_repository.get(explanation.decision_explanation_id) == explanation
     assert explanation.trust_record_reference == trust_record.trust_record_id
+    assert explanation.exception_record_references == [exceptions[0].exception_id]
     assert explanation.decision_path[-1]["output"] == trust_record.trust_classification

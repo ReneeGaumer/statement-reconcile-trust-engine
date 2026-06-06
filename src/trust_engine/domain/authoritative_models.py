@@ -32,6 +32,7 @@ class DecisionExplanationRecord:
     embargo:bool
     trust_score:float
     trust_classification:str
+    exception_record_references:list
     decision_path:list
     created_timestamp:datetime
 
