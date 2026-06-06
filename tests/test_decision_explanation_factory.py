@@ -7,6 +7,7 @@ def test_decision_explanation_factory():
 
     assert record.decision_explanation_id
     assert record.trust_record_reference == "TR-001"
+    assert record.exception_record_references == []
     assert record.evidence_count == 10
     assert record.exception_count == 1
     assert record.exception_penalty == 50.0
