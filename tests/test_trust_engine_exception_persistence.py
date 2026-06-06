@@ -16,3 +16,8 @@ def test_trust_engine_exception_persistence():
         loaded = engine.exception_record_repository.get(exception.exception_id)
         assert loaded == exception
         assert exception.rule_name.endswith("_EXCEPTION_RULE")
+        assert exception.source_reference == "statement.pdf"
+        assert exception.field_name == "TRUST_SEVERITY"
+        assert exception.expected_value == "NO_EXCEPTION"
+        assert "triggered trust exception" in exception.exception_reason
+        assert exception.original_value in ["WARNING", "CRITICAL"]

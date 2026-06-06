@@ -55,6 +55,11 @@ class ExceptionRecordV2:
     severity:str
     penalty:float
     rule_name:str
+    source_reference:str
+    field_name:str
+    original_value:str
+    expected_value:str
+    exception_reason:str
     created_timestamp:datetime
 
 

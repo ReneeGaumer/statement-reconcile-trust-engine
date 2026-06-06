@@ -43,7 +43,16 @@ class TrustEngine:
         exception_records = []
         for severity in severities:
             penalty = self.exception_evaluator.penalty(severity)
-            exception_record = self.exception_record_factory.create(severity.value, penalty, severity.name + "_EXCEPTION_RULE")
+            exception_record = self.exception_record_factory.create(
+                severity.value,
+                penalty,
+                severity.name + "_EXCEPTION_RULE",
+                source_reference=source_document_reference,
+                field_name="TRUST_SEVERITY",
+                original_value=severity.value,
+                expected_value="NO_EXCEPTION",
+                exception_reason=severity.name + " severity triggered trust exception"
+            )
             self.exception_record_repository.save(exception_record)
             exception_records.append(exception_record)
         total_penalty = sum(record.penalty for record in exception_records)
