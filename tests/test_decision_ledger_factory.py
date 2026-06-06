@@ -8,4 +8,5 @@ def test_decision_ledger_factory():
     
     assert entry.decision_id
     assert entry.trust_record_reference == "TR-001"
+    assert entry.rule_version_reference == "TRUST_MODEL_RULES_V1"
     assert entry.decision_timestamp

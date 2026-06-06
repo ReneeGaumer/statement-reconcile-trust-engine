@@ -20,6 +20,7 @@ class DecisionLedgerEntry:
     decision_id:str
     trust_record_reference:str
     decision_explanation_reference:str
+    rule_version_reference:str
     decision_timestamp:datetime
 
 @dataclass
@@ -56,6 +57,7 @@ class AuditPackage:
     evidence_lineage_reference:str
     decision_ledger_reference:str
     decision_explanation_reference:str
+    rule_version_references:list
     created_timestamp:datetime
 
 

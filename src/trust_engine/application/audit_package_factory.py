@@ -3,12 +3,13 @@ from uuid import uuid4
 from trust_engine.domain.authoritative_models import AuditPackage
 
 class AuditPackageFactory:
-    def create(self, trust_record_reference, evidence_lineage_reference, decision_ledger_reference, decision_explanation_reference=""):
+    def create(self, trust_record_reference, evidence_lineage_reference, decision_ledger_reference, decision_explanation_reference="", rule_version_references=None):
         return AuditPackage(
             audit_package_id=str(uuid4()),
             trust_record_reference=trust_record_reference,
             evidence_lineage_reference=evidence_lineage_reference,
             decision_ledger_reference=decision_ledger_reference,
             decision_explanation_reference=decision_explanation_reference,
+            rule_version_references=rule_version_references or [],
             created_timestamp=datetime.now(UTC)
         )
