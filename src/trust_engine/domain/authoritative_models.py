@@ -101,3 +101,14 @@ class RuleApprovalRecord:
     approver:str
     approval_timestamp:datetime
     approval_status:str
+
+
+@dataclass
+class RuleGovernanceRecord:
+    governance_id:str
+    rule_version_reference:str
+    approval_reference:str
+    governance_status:str
+    effective_timestamp:datetime
+    authorized_by:str
+    governance_reason:str
