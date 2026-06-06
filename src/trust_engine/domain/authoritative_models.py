@@ -19,6 +19,7 @@ class TrustRecord:
 class DecisionLedgerEntry:
     decision_id:str
     trust_record_reference:str
+    decision_explanation_reference:str
     decision_timestamp:datetime
 
 @dataclass
