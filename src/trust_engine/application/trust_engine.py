@@ -81,7 +81,7 @@ class TrustEngine:
                 "step": "EXCEPTION_RULES_EVALUATED",
                 "rule": "SEVERITY_TO_EXCEPTION_PENALTY",
                 "inputs": {"severities": [severity.value for severity in severities]},
-                "output": {"exception_count": len(exception_records), "exception_penalty": total_penalty}
+                "output": {"exception_count": len(exception_records), "exception_penalty": total_penalty, "exception_record_references": [record.exception_id for record in exception_records]}
             },
             {
                 "step": "TRUST_SCORE_CALCULATED",
