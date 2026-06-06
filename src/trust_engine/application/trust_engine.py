@@ -53,11 +53,36 @@ class TrustEngine:
         trust_record = self.record_factory.create(score, classification.value)
         decision_ledger = self.decision_ledger_factory.create(trust_record.trust_record_id)
         decision_path = [
-            "EVIDENCE_LINEAGE_CREATED",
-            "EXCEPTION_RULES_EVALUATED",
-            "TRUST_SCORE_CALCULATED",
-            "EXPORT_EMBARGO_EVALUATED",
-            "TRUST_CLASSIFICATION_ASSIGNED"
+            {
+                "step": "EVIDENCE_LINEAGE_CREATED",
+                "rule": "SOURCE_DOCUMENT_REFERENCE_CAPTURED",
+                "inputs": {"source_document_reference": source_document_reference},
+                "output": evidence_lineage.lineage_id
+            },
+            {
+                "step": "EXCEPTION_RULES_EVALUATED",
+                "rule": "SEVERITY_TO_EXCEPTION_PENALTY",
+                "inputs": {"severities": [severity.value for severity in severities]},
+                "output": {"exception_count": len(exception_records), "exception_penalty": total_penalty}
+            },
+            {
+                "step": "TRUST_SCORE_CALCULATED",
+                "rule": "EVIDENCE_COUNT_TIMES_TEN_MINUS_EXCEPTION_PENALTY",
+                "inputs": {"evidence_count": evidence_count, "exception_penalty": total_penalty},
+                "output": score
+            },
+            {
+                "step": "EXPORT_EMBARGO_EVALUATED",
+                "rule": "CRITICAL_SEVERITY_TRIGGERS_EXPORT_EMBARGO",
+                "inputs": {"severities": [severity.value for severity in severities]},
+                "output": embargo
+            },
+            {
+                "step": "TRUST_CLASSIFICATION_ASSIGNED",
+                "rule": "TRUST_SCORE_THRESHOLD_WITH_EMBARGO_OVERRIDE",
+                "inputs": {"trust_score": score, "embargo": embargo},
+                "output": classification.value
+            }
         ]
         decision_explanation = self.decision_explanation_factory.create(trust_record.trust_record_id, evidence_count, len(exception_records), total_penalty, embargo, score, classification.value, decision_path)
         audit_package = self.audit_package_factory.create(trust_record.trust_record_id, evidence_lineage.lineage_id, decision_ledger.decision_id)

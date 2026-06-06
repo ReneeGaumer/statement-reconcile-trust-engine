@@ -3,7 +3,7 @@ from trust_engine.application.decision_explanation_factory import DecisionExplan
 
 def test_decision_explanation_factory():
     factory = DecisionExplanationFactory()
-    record = factory.create("TR-001", 10, 1, 50.0, True, 50.0, "EXPORT_EMBARGO", ["EVIDENCE_LINEAGE_CREATED", "EXCEPTION_RULES_EVALUATED", "TRUST_SCORE_CALCULATED", "EXPORT_EMBARGO_EVALUATED", "TRUST_CLASSIFICATION_ASSIGNED"])
+    record = factory.create("TR-001", 10, 1, 50.0, True, 50.0, "EXPORT_EMBARGO", [{"step": "TRUST_SCORE_CALCULATED", "rule": "EVIDENCE_COUNT_TIMES_TEN_MINUS_EXCEPTION_PENALTY", "inputs": {"evidence_count": 10, "exception_penalty": 50.0}, "output": 50.0}])
 
     assert record.decision_explanation_id
     assert record.trust_record_reference == "TR-001"
@@ -13,5 +13,8 @@ def test_decision_explanation_factory():
     assert record.embargo is True
     assert record.trust_score == 50.0
     assert record.trust_classification == "EXPORT_EMBARGO"
-    assert record.decision_path == ["EVIDENCE_LINEAGE_CREATED", "EXCEPTION_RULES_EVALUATED", "TRUST_SCORE_CALCULATED", "EXPORT_EMBARGO_EVALUATED", "TRUST_CLASSIFICATION_ASSIGNED"]
+    assert record.decision_path[0]["step"] == "TRUST_SCORE_CALCULATED"
+    assert record.decision_path[0]["rule"] == "EVIDENCE_COUNT_TIMES_TEN_MINUS_EXCEPTION_PENALTY"
+    assert record.decision_path[0]["inputs"]["evidence_count"] == 10
+    assert record.decision_path[0]["output"] == 50.0
     assert record.created_timestamp
