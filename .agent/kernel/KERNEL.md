@@ -8,6 +8,38 @@ Purpose: Reconstruct repository state from evidence and determine the next safes
 
 
 
+\## Execution Directive
+
+
+
+If this file is discovered during a KERNEL run, the agent must not stop after reporting discovery.
+
+
+
+Discovery is not completion.
+
+
+
+After reading this file, immediately read:
+
+
+
+.agent/kernel/RUNBOOK.md
+
+
+
+Then execute the full runbook sequence unless a documented stop condition is triggered.
+
+
+
+A valid KERNEL run must produce the required CURRENT STATE output defined in RUNBOOK.md.
+
+
+
+If the agent cannot execute the runbook, it must report the specific missing evidence or blocked capability.
+
+
+
 This kernel is not product logic.
 
 It must not be imported by runtime code.
@@ -53,6 +85,4 @@ No completion without verification.
 No repository state may be inferred from chat memory alone.
 
 GitHub repository state is the source of truth.
-
-
 
