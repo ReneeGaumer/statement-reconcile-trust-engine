@@ -17,6 +17,10 @@ from trust_engine.infrastructure.audit_package_repository import AuditPackageRep
 from trust_engine.infrastructure.exception_record_repository import ExceptionRecordRepository
 from trust_engine.infrastructure.export_package_repository import ExportPackageRepository
 from trust_engine.infrastructure.decision_explanation_repository import DecisionExplanationRepository
+from trust_engine.reconciliation.reconciliation_evaluator import ReconciliationEvaluator
+from trust_engine.reconciliation.reconciliation_record_repository import (
+    ReconciliationRecordRepository,
+)
 
 
 class TrustEngine:
@@ -40,6 +44,8 @@ class TrustEngine:
         self.exception_record_repository = ExceptionRecordRepository()
         self.export_package_repository = ExportPackageRepository()
         self.decision_explanation_repository = DecisionExplanationRepository()
+        self.reconciliation_evaluator = ReconciliationEvaluator()
+        self.reconciliation_record_repository = ReconciliationRecordRepository()
 
     def determine_trust(self, evidence_count, severities, source_document_reference):
         evidence_lineage = self.evidence_lineage_factory.create(source_document_reference)
@@ -191,3 +197,36 @@ class TrustEngine:
             "embargo": embargo,
             "exception_penalty": total_penalty,
         }
+
+    def determine_trust_with_reconciliation(
+        self,
+        evidence_count,
+        severities,
+        source_document_reference,
+        reconciliation_inputs,
+    ):
+        reconciliation_records = []
+
+        for reconciliation_input in reconciliation_inputs:
+            reconciliation_record = self.reconciliation_evaluator.evaluate(
+                field_name=reconciliation_input["field_name"],
+                expected_value=reconciliation_input.get("expected_value"),
+                actual_value=reconciliation_input.get("actual_value"),
+                tolerance=reconciliation_input.get("tolerance", 0),
+                source_reference=source_document_reference,
+            )
+            self.reconciliation_record_repository.save(reconciliation_record)
+            reconciliation_records.append(reconciliation_record)
+
+        result = self.determine_trust(
+            evidence_count,
+            severities,
+            source_document_reference,
+        )
+
+        result["reconciliation_records"] = reconciliation_records
+        result["reconciliation_record_references"] = [
+            record.reconciliation_id for record in reconciliation_records
+        ]
+
+        return result
