@@ -17,6 +17,12 @@ from trust_engine.infrastructure.audit_package_repository import AuditPackageRep
 from trust_engine.infrastructure.exception_record_repository import ExceptionRecordRepository
 from trust_engine.infrastructure.export_package_repository import ExportPackageRepository
 from trust_engine.infrastructure.decision_explanation_repository import DecisionExplanationRepository
+from trust_engine.reconciliation.reconciliation_decision_link import (
+    ReconciliationDecisionLink,
+)
+from trust_engine.reconciliation.reconciliation_decision_link_repository import (
+    ReconciliationDecisionLinkRepository,
+)
 from trust_engine.reconciliation.reconciliation_evaluator import ReconciliationEvaluator
 from trust_engine.reconciliation.reconciliation_record_repository import (
     ReconciliationRecordRepository,
@@ -46,6 +52,9 @@ class TrustEngine:
         self.decision_explanation_repository = DecisionExplanationRepository()
         self.reconciliation_evaluator = ReconciliationEvaluator()
         self.reconciliation_record_repository = ReconciliationRecordRepository()
+        self.reconciliation_decision_link_repository = (
+            ReconciliationDecisionLinkRepository()
+        )
 
     def determine_trust(self, evidence_count, severities, source_document_reference):
         evidence_lineage = self.evidence_lineage_factory.create(source_document_reference)
@@ -224,9 +233,28 @@ class TrustEngine:
             source_document_reference,
         )
 
-        result["reconciliation_records"] = reconciliation_records
-        result["reconciliation_record_references"] = [
+        reconciliation_record_references = [
             record.reconciliation_id for record in reconciliation_records
         ]
+
+        reconciliation_decision_link = ReconciliationDecisionLink.create(
+            trust_record_reference=result["trust_record"].trust_record_id,
+            decision_explanation_reference=result[
+                "decision_explanation"
+            ].decision_explanation_id,
+            reconciliation_record_references=reconciliation_record_references,
+            source_document_reference=source_document_reference,
+            rule_reference="RECONCILIATION_RECORD_REFERENCES_CAPTURED",
+        )
+        self.reconciliation_decision_link_repository.save(
+            reconciliation_decision_link
+        )
+
+        result["reconciliation_records"] = reconciliation_records
+        result["reconciliation_record_references"] = reconciliation_record_references
+        result["reconciliation_decision_link"] = reconciliation_decision_link
+        result["reconciliation_decision_link_reference"] = (
+            reconciliation_decision_link.reconciliation_decision_link_id
+        )
 
         return result
