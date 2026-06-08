@@ -117,7 +117,7 @@ def test_trust_engine_creates_reconciliation_decision_link():
         result["reconciliation_record_references"]
     )
     assert link.source_document_reference == "statement.pdf"
-    assert link.rule_reference == "RECONCILIATION_RECORD_REFERENCES_CAPTURED"
+    assert link.rule_reference == engine.policy.RECONCILIATION_TRUST_IMPACT_RULE
     assert (
         engine.reconciliation_decision_link_repository.get(
             link.reconciliation_decision_link_id

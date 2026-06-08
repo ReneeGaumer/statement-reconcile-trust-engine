@@ -50,7 +50,7 @@ def test_reconciliation_decision_link_reconstructs_trust_and_reconciliation_chai
         record.reconciliation_id for record in reconciliation_records
     ]
     assert link.source_document_reference == "statement.pdf"
-    assert link.rule_reference == "RECONCILIATION_RECORD_REFERENCES_CAPTURED"
+    assert link.rule_reference == engine.policy.RECONCILIATION_TRUST_IMPACT_RULE
 
     assert reconciliation_records[0].status == ReconciliationStatus.MATCH.value
     assert (

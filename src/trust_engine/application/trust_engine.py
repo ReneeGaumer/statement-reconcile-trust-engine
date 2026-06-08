@@ -269,7 +269,7 @@ class TrustEngine:
             ].decision_explanation_id,
             reconciliation_record_references=reconciliation_record_references,
             source_document_reference=source_document_reference,
-            rule_reference="RECONCILIATION_RECORD_REFERENCES_CAPTURED",
+            rule_reference=self.policy.RECONCILIATION_TRUST_IMPACT_RULE,
         )
         self.reconciliation_decision_link_repository.save(
             reconciliation_decision_link
