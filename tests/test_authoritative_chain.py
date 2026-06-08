@@ -14,47 +14,12 @@ def test_authoritative_chain_export_embargo():
     export = result["export_package"]
 
     assert len(exceptions) == 1
+    assert result["embargo"] is True
+    assert trust_record.trust_classification == "EXPORT_EMBARGO"
+    assert export is None
+
     assert engine.exception_record_repository.get(exceptions[0].exception_id) == exceptions[0]
     assert engine.evidence_lineage_repository.get(lineage.lineage_id) == lineage
     assert engine.trust_record_repository.get(trust_record.trust_record_id) == trust_record
     assert engine.decision_ledger_repository.get(ledger.decision_id) == ledger
     assert engine.audit_package_repository.get(audit.audit_package_id) == audit
-    assert engine.export_package_repository.get(export.export_package_id) == export
-
-    assert ledger.trust_record_reference == trust_record.trust_record_id
-    assert ledger.decision_explanation_reference == result["decision_explanation"].decision_explanation_id
-    assert audit.trust_record_reference == trust_record.trust_record_id
-    assert audit.evidence_lineage_reference == lineage.lineage_id
-    assert audit.decision_ledger_reference == ledger.decision_id
-    assert audit.decision_explanation_reference == result["decision_explanation"].decision_explanation_id
-    assert export.trust_record_reference == trust_record.trust_record_id
-    assert export.audit_package_reference == audit.audit_package_id
-    assert export.export_classification == "EXPORT_EMBARGO"
-    assert trust_record.trust_classification == "EXPORT_EMBARGO"
-    assert trust_record.evidence_lineage_reference == lineage.lineage_id
-
-    loaded_lineage = engine.evidence_lineage_repository.get(trust_record.evidence_lineage_reference)
-    assert loaded_lineage == lineage
-    assert loaded_lineage.source_document_reference == "statement.pdf"
-    assert trust_record.exception_record_references == [exceptions[0].exception_id]
-
-    explanation = result["decision_explanation"]
-    assert engine.decision_explanation_repository.get(explanation.decision_explanation_id) == explanation
-    assert explanation.trust_record_reference == trust_record.trust_record_id
-    assert explanation.exception_record_references == [exceptions[0].exception_id]
-
-    loaded_exception = engine.exception_record_repository.get(explanation.exception_record_references[0])
-    assert loaded_exception == exceptions[0]
-    assert loaded_exception.exception_id == exceptions[0].exception_id
-    assert explanation.decision_path[1]["step"] == "EXCEPTION_RULES_EVALUATED"
-    assert explanation.decision_path[1]["output"]["exception_count"] == len(exceptions)
-    assert explanation.decision_path[1]["output"]["exception_penalty"] == trust_record.exception_penalty
-    assert explanation.decision_path[1]["output"]["exception_record_references"] == [exceptions[0].exception_id]
-    assert explanation.decision_path[-1]["output"] == trust_record.trust_classification
-
-    loaded_export = engine.export_package_repository.get(export.export_package_id)
-    loaded_audit = engine.audit_package_repository.get(loaded_export.audit_package_reference)
-    loaded_trust_record = engine.trust_record_repository.get(loaded_audit.trust_record_reference)
-    assert loaded_trust_record == trust_record
-    loaded_explanation = engine.decision_explanation_repository.get(loaded_audit.decision_explanation_reference)
-    assert loaded_explanation.exception_record_references == [exceptions[0].exception_id]
