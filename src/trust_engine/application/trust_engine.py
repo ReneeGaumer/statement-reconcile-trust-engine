@@ -25,7 +25,7 @@ class TrustEngine:
         self.score_calculator = TrustScoreCalculator()
         self.classifier = TrustClassifier(self.policy)
         self.exception_evaluator = ExceptionEvaluator(self.policy)
-        self.embargo_evaluator = ExportEmbargoEvaluator()
+        self.embargo_evaluator = ExportEmbargoEvaluator(self.policy)
         self.record_factory = TrustRecordFactory()
         self.decision_ledger_factory = DecisionLedgerFactory()
         self.evidence_lineage_factory = EvidenceLineageFactory()

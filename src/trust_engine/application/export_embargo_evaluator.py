@@ -1,5 +1,9 @@
-from trust_engine.exceptions.severity import Severity
+from trust_engine.application.trust_model_policy import TrustModelPolicy
+
 
 class ExportEmbargoEvaluator:
+    def __init__(self, policy=None):
+        self.policy = policy or TrustModelPolicy()
+
     def should_embargo(self, severities):
-        return Severity.CRITICAL in severities
+        return self.policy.should_embargo(severities)
