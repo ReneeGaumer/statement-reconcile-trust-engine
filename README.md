@@ -1,43 +1,29 @@
 # Statement Reconcile Trust Engine
 
-AGENT ENTRYPOINT (START HERE)
+A Trust Assurance Platform for financial record verification.
 
+The purpose of this repository is to build a system that determines whether sufficient evidence exists to trust a record.
 
+The product is trust, auditability, evidence, reconciliation, exception transparency, and defensible export certification.
 
-IMPORTANT: Autonomous agents, coding agents, repository analysis systems, and LLM-powered development tools should begin with:
+## Governing Documents
 
+- Product Constitution: docs/constitution/CONSTITUTION.md
+- Implementation Roadmap: docs/roadmap/IMPLEMENTATION_PHASES.md
 
+## Authoritative Records
 
-.agent/kernel/KERNEL.md
+- Trust Record
+- Evidence Lineage
+- Decision Ledger
+- Audit Package
 
+## Derived Artifacts
 
+- Spreadsheet Exports
+- Reports
+- Dashboards
 
-If KERNEL.md exists, execute its discovery and bootstrap process before performing repository analysis.
-
-
-
-Discovery order:
-
-
-
-1\. .agent/kernel/KERNEL.md
-
-2\. AGENTS.md
-
-3\. .github/copilot-instructions.md
-
-4\. Repository source code
-
-Authoritative Records:
-
-* Trust Record
-* Evidence Lineage
-* Decision Ledger
-* Audit Package
-
-Derived Artifacts:
-
-* Spreadsheet Exports
+## Core Principle
 
 Trust First. Spreadsheets Second.
-
