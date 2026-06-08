@@ -68,13 +68,19 @@ class ExceptionRecord:
 
 @dataclass
 class AuditPackage:
-    audit_package_id:str
-    trust_record_reference:str
-    evidence_lineage_reference:str
-    decision_ledger_reference:str
-    decision_explanation_reference:str
-    rule_version_references:list
-    created_timestamp:datetime
+    audit_package_id: str
+    trust_record_reference: str
+    evidence_lineage_reference: str
+    decision_ledger_reference: str
+    decision_explanation_reference: str
+    rule_version_references: list
+    exception_references: list
+    trust_score: float
+    trust_classification: str
+    export_classification: str
+    reconstruction_status: str
+    audit_package_status: str
+    created_timestamp: datetime
 
 
 @dataclass
