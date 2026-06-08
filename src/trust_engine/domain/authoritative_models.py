@@ -17,11 +17,18 @@ class TrustRecord:
 
 @dataclass
 class DecisionLedgerEntry:
-    decision_id:str
-    trust_record_reference:str
-    decision_explanation_reference:str
-    rule_version_reference:str
-    decision_timestamp:datetime
+    decision_id: str
+    trust_record_reference: str
+    decision_explanation_reference: str
+    rule_version_reference: str
+    decision_rationale: str
+    evidence_references: list
+    exception_references: list
+    trust_score: float
+    trust_classification: str
+    decision_outcome: str
+    decision_timestamp: datetime
+    created_timestamp: datetime
 
 @dataclass
 class DecisionExplanationRecord:

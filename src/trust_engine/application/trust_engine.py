@@ -104,7 +104,17 @@ class TrustEngine:
         ]
         decision_explanation = self.decision_explanation_factory.create(trust_record.trust_record_id, evidence_count, len(exception_records), total_penalty, embargo, score, classification.value, decision_path, [record.exception_id for record in exception_records])
         rule_version_reference = "TRUST_MODEL_RULES_V1"
-        decision_ledger = self.decision_ledger_factory.create(trust_record.trust_record_id, decision_explanation.decision_explanation_id, rule_version_reference)
+        decision_ledger = self.decision_ledger_factory.create(
+    trust_record_reference=trust_record.trust_record_id,
+    decision_explanation_reference=decision_explanation.decision_explanation_id,
+    rule_version_reference=rule_version_reference,
+    decision_rationale="Trust classification derived from evidence lineage, exception evaluation, trust score calculation, and embargo evaluation.",
+    evidence_references=[evidence_lineage.lineage_id],
+    exception_references=[record.exception_id for record in exception_records],
+    trust_score=score,
+    trust_classification=classification.value,
+    decision_outcome=classification.value,
+)
         audit_package = self.audit_package_factory.create(trust_record.trust_record_id, evidence_lineage.lineage_id, decision_ledger.decision_id, decision_explanation.decision_explanation_id, [rule_version_reference])
         self.evidence_lineage_repository.save(evidence_lineage)
         self.trust_record_repository.save(trust_record)

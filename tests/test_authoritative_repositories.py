@@ -9,19 +9,32 @@ from trust_engine.infrastructure.audit_package_repository import AuditPackageRep
 
 
 def test_authoritative_repositories():
-    
     trust_record = TrustRecordFactory().create(100.0, "CLEAN_EXPORT")
     evidence = EvidenceLineageFactory().create("statement.pdf")
-    ledger = DecisionLedgerFactory().create(trust_record.trust_record_id)
-    audit = AuditPackageFactory().create(trust_record.trust_record_id, evidence.lineage_id, ledger.decision_id)
-    
+    ledger = DecisionLedgerFactory().create(
+        trust_record_reference=trust_record.trust_record_id,
+        decision_explanation_reference="DE-001",
+        rule_version_reference="TRUST_MODEL_RULES_V1",
+        decision_rationale="Repository persistence test decision rationale.",
+        evidence_references=[evidence.lineage_id],
+        exception_references=[],
+        trust_score=trust_record.trust_score,
+        trust_classification=trust_record.trust_classification,
+        decision_outcome=trust_record.trust_classification,
+    )
+    audit = AuditPackageFactory().create(
+        trust_record.trust_record_id,
+        evidence.lineage_id,
+        ledger.decision_id,
+    )
+
     repos = [
         (TrustRecordRepository(), trust_record, trust_record.trust_record_id),
         (EvidenceLineageRepository(), evidence, evidence.lineage_id),
         (DecisionLedgerRepository(), ledger, ledger.decision_id),
         (AuditPackageRepository(), audit, audit.audit_package_id),
     ]
-    
+
     for repo, record, record_id in repos:
         saved = repo.save(record)
         loaded = repo.get(record_id)
@@ -32,4 +45,3 @@ def test_authoritative_repositories():
             raise AssertionError("Overwrite should have failed")
         except ValueError:
             print("Immutable save protection confirmed", record_id)
-    
