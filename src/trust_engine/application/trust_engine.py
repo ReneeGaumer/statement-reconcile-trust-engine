@@ -10,6 +10,7 @@ from trust_engine.application.exception_record_factory import ExceptionRecordFac
 from trust_engine.application.export_package_factory import ExportPackageFactory
 from trust_engine.application.decision_explanation_factory import DecisionExplanationFactory
 from trust_engine.application.trust_model_policy import TrustModelPolicy
+from trust_engine.exceptions.severity import Severity
 from trust_engine.infrastructure.trust_record_repository import TrustRecordRepository
 from trust_engine.infrastructure.decision_ledger_repository import DecisionLedgerRepository
 from trust_engine.infrastructure.evidence_lineage_repository import EvidenceLineageRepository
@@ -27,6 +28,7 @@ from trust_engine.reconciliation.reconciliation_evaluator import ReconciliationE
 from trust_engine.reconciliation.reconciliation_record_repository import (
     ReconciliationRecordRepository,
 )
+from trust_engine.reconciliation.reconciliation_status import ReconciliationStatus
 
 
 class TrustEngine:
@@ -89,7 +91,9 @@ class TrustEngine:
             embargo=embargo,
             trust_calculation_rule=self.policy.SCORE_CALCULATION_RULE,
             evidence_lineage_reference=evidence_lineage.lineage_id,
-            exception_record_references=[record.exception_id for record in exception_records],
+            exception_record_references=[
+                record.exception_id for record in exception_records
+            ],
         )
 
         decision_path = [
@@ -207,6 +211,23 @@ class TrustEngine:
             "exception_penalty": total_penalty,
         }
 
+    def _reconciliation_exception_statuses(self):
+        return {
+            ReconciliationStatus.MISMATCH.value,
+            ReconciliationStatus.MISSING_EXPECTED.value,
+            ReconciliationStatus.MISSING_ACTUAL.value,
+            ReconciliationStatus.UNRECONCILABLE.value,
+        }
+
+    def _reconciliation_exception_severities(self, reconciliation_records):
+        exception_statuses = self._reconciliation_exception_statuses()
+
+        return [
+            Severity.WARNING
+            for record in reconciliation_records
+            if record.status in exception_statuses
+        ]
+
     def determine_trust_with_reconciliation(
         self,
         evidence_count,
@@ -227,9 +248,13 @@ class TrustEngine:
             self.reconciliation_record_repository.save(reconciliation_record)
             reconciliation_records.append(reconciliation_record)
 
+        reconciliation_exception_severities = (
+            self._reconciliation_exception_severities(reconciliation_records)
+        )
+
         result = self.determine_trust(
             evidence_count,
-            severities,
+            list(severities) + reconciliation_exception_severities,
             source_document_reference,
         )
 

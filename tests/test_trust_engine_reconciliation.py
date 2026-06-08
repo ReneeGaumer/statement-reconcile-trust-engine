@@ -54,7 +54,7 @@ def test_trust_engine_preserves_reconciliation_mismatch_without_silent_correctio
     assert reconciliation_record.expected_value == "$1,000.00"
     assert reconciliation_record.actual_value == "1000.00"
     assert reconciliation_record.status == ReconciliationStatus.UNRECONCILABLE.value
-    assert result["trust_record"].trust_classification == "CLEAN_EXPORT"
+    assert result["trust_record"].trust_classification == "EXPORT_WITH_WARNINGS"
 
 
 def test_trust_engine_supports_multiple_reconciliation_records():
