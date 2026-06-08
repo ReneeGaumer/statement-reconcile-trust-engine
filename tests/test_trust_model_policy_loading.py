@@ -90,3 +90,17 @@ def test_trust_model_policy_fails_clearly_when_threshold_key_missing(tmp_path):
 
     with pytest.raises(KeyError, match="missing required keys"):
         TrustModelPolicy(policy_dir)
+
+def test_trust_model_policy_exposes_source_metadata(tmp_path):
+    policy_dir = tmp_path / "policy"
+    write_policy_files(policy_dir)
+
+    policy = TrustModelPolicy(policy_dir)
+
+    assert policy.policy_source_metadata() == {
+        "rule_version_reference": "TRUST_MODEL_RULES_V1",
+        "trust_impact_rules_path": str(policy_dir / "trust-impact-rules.schema.json"),
+        "classification_thresholds_path": str(
+            policy_dir / "trust-classification-thresholds.schema.json"
+        ),
+    }

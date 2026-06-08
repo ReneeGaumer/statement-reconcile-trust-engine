@@ -57,7 +57,18 @@ def test_trust_engine_records_policy_rule_references_in_authoritative_chain():
         for step in decision_explanation.decision_path
     }
 
+    assert (
+        rules_by_step["TRUST_POLICY_SOURCE_LOADED"]
+        == "TRUST_MODEL_POLICY_SOURCE_METADATA_CAPTURED"
+    )
     assert rules_by_step["EXCEPTION_RULES_EVALUATED"] == policy.EXCEPTION_PENALTY_RULE
     assert rules_by_step["TRUST_SCORE_CALCULATED"] == policy.SCORE_CALCULATION_RULE
     assert rules_by_step["EXPORT_EMBARGO_EVALUATED"] == policy.EMBARGO_RULE
     assert rules_by_step["TRUST_CLASSIFICATION_ASSIGNED"] == policy.CLASSIFICATION_RULE
+
+    outputs_by_step = {
+        step["step"]: step["output"]
+        for step in decision_explanation.decision_path
+    }
+
+    assert outputs_by_step["TRUST_POLICY_SOURCE_LOADED"] == policy.policy_source_metadata()

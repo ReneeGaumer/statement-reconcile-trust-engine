@@ -35,6 +35,13 @@ class TrustModelPolicy:
     def should_embargo(self, severities) -> bool:
         return Severity.CRITICAL in severities
 
+    def policy_source_metadata(self):
+        return {
+            "rule_version_reference": self.RULE_VERSION_REFERENCE,
+            "trust_impact_rules_path": str(self.trust_impact_rules_path),
+            "classification_thresholds_path": str(self.classification_thresholds_path),
+        }
+
     def classify(self, score: float, embargo: bool = False) -> str:
         if embargo:
             return self.EMBARGO_CLASSIFICATION

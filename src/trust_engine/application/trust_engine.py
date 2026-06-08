@@ -23,9 +23,9 @@ class TrustEngine:
     def __init__(self):
         self.policy = TrustModelPolicy()
         self.score_calculator = TrustScoreCalculator()
-        self.classifier = TrustClassifier(self.policy)
-        self.exception_evaluator = ExceptionEvaluator(self.policy)
-        self.embargo_evaluator = ExportEmbargoEvaluator(self.policy)
+        self.classifier = TrustClassifier()
+        self.exception_evaluator = ExceptionEvaluator()
+        self.embargo_evaluator = ExportEmbargoEvaluator()
         self.record_factory = TrustRecordFactory()
         self.decision_ledger_factory = DecisionLedgerFactory()
         self.evidence_lineage_factory = EvidenceLineageFactory()
@@ -50,7 +50,7 @@ class TrustEngine:
             exception_record = self.exception_record_factory.create(
                 severity.value,
                 penalty,
-                severity.name + "_EXCEPTION_RULE",
+                self.policy.EXCEPTION_PENALTY_RULE,
                 source_reference=source_document_reference,
                 field_name="TRUST_SEVERITY",
                 original_value=severity.value,
@@ -83,6 +83,12 @@ class TrustEngine:
                 "rule": "SOURCE_DOCUMENT_REFERENCE_CAPTURED",
                 "inputs": {"source_document_reference": source_document_reference},
                 "output": evidence_lineage.lineage_id,
+            },
+            {
+                "step": "TRUST_POLICY_SOURCE_LOADED",
+                "rule": "TRUST_MODEL_POLICY_SOURCE_METADATA_CAPTURED",
+                "inputs": {},
+                "output": self.policy.policy_source_metadata(),
             },
             {
                 "step": "EXCEPTION_RULES_EVALUATED",
@@ -166,7 +172,7 @@ class TrustEngine:
         self.audit_package_repository.save(audit_package)
 
         export_package = None
-        if classification.value != self.policy.EMBARGO_CLASSIFICATION:
+        if classification.value != "EXPORT_EMBARGO":
             export_package = self.export_package_factory.create(
                 trust_record.trust_record_id,
                 audit_package.audit_package_id,
