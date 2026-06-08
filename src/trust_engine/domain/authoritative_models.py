@@ -39,9 +39,18 @@ class DecisionExplanationRecord:
 
 @dataclass
 class EvidenceLineageRecord:
-    lineage_id:str
-    source_document_reference:str
-    acquisition_timestamp:datetime
+    lineage_id: str
+    lineage_version: str
+    source_document_reference: str
+    source_location: str
+    page_reference: str
+    acquisition_method: str
+    acquisition_timestamp: datetime
+    evidence_hash: str
+    chain_of_custody: list
+    evidence_type: str
+    evidence_status: str
+    created_timestamp: datetime
 
 @dataclass
 class ExceptionRecord:
