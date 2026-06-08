@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 from trust_engine.exceptions.severity import Severity
+from trust_engine.reconciliation.reconciliation_status import ReconciliationStatus
 
 
 class TrustModelPolicy:
@@ -26,9 +27,15 @@ class TrustModelPolicy:
     REQUIRED_THRESHOLD_KEYS = ("100", "85-99", "60-84", "1-59")
 
     def __init__(self, trust_model_dir=None):
-        self.trust_model_dir = Path(trust_model_dir) if trust_model_dir else self.DEFAULT_TRUST_MODEL_DIR
-        self.trust_impact_rules_path = self.trust_model_dir / self.TRUST_IMPACT_RULES_FILE
-        self.classification_thresholds_path = self.trust_model_dir / self.CLASSIFICATION_THRESHOLDS_FILE
+        self.trust_model_dir = (
+            Path(trust_model_dir) if trust_model_dir else self.DEFAULT_TRUST_MODEL_DIR
+        )
+        self.trust_impact_rules_path = (
+            self.trust_model_dir / self.TRUST_IMPACT_RULES_FILE
+        )
+        self.classification_thresholds_path = (
+            self.trust_model_dir / self.CLASSIFICATION_THRESHOLDS_FILE
+        )
         self.severity_penalties = self._load_severity_penalties()
         self.classification_thresholds = self._load_classification_thresholds()
 
@@ -38,11 +45,24 @@ class TrustModelPolicy:
     def should_embargo(self, severities) -> bool:
         return Severity.CRITICAL in severities
 
+    def reconciliation_trust_impact_statuses(self):
+        return {
+            ReconciliationStatus.MISMATCH.value,
+            ReconciliationStatus.MISSING_EXPECTED.value,
+            ReconciliationStatus.MISSING_ACTUAL.value,
+            ReconciliationStatus.UNRECONCILABLE.value,
+        }
+
+    def reconciliation_trust_impact_severity(self):
+        return Severity.WARNING
+
     def policy_source_metadata(self):
         return {
             "rule_version_reference": self.RULE_VERSION_REFERENCE,
             "trust_impact_rules_path": str(self.trust_impact_rules_path),
-            "classification_thresholds_path": str(self.classification_thresholds_path),
+            "classification_thresholds_path": str(
+                self.classification_thresholds_path
+            ),
         }
 
     def classify(self, score: float, embargo: bool = False) -> str:
