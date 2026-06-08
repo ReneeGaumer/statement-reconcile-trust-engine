@@ -41,16 +41,23 @@ def build_repository_cases():
     )
 
     decision_explanation = DecisionExplanationFactory().create(
-        trust_record.trust_record_id,
-        evidence_count=10,
-        exception_count=1,
-        exception_penalty=10,
-        embargo=False,
-        trust_score=90.0,
-        trust_classification="EXPORT_WITH_WARNINGS",
-        decision_path=[],
-        exception_record_references=["EX-001"],
-    )
+    trust_record.trust_record_id,
+    evidence_count=10,
+    exception_count=1,
+    exception_penalty=10,
+    embargo=False,
+    trust_score=90.0,
+    trust_classification="EXPORT_WITH_WARNINGS",
+    decision_path=[
+        {
+            "step": "TRUST_SCORE_CALCULATED",
+            "rule": "TEST_RULE",
+            "inputs": {"evidence_count": 10, "exception_penalty": 10},
+            "output": 90.0,
+        }
+    ],
+    exception_record_references=["EX-001"],
+)
 
     decision_ledger = DecisionLedgerFactory().create(
         trust_record_reference=trust_record.trust_record_id,
