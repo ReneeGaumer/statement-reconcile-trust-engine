@@ -9,6 +9,9 @@ from trust_engine.application.audit_package_factory import AuditPackageFactory
 from trust_engine.application.exception_record_factory import ExceptionRecordFactory
 from trust_engine.application.export_package_factory import ExportPackageFactory
 from trust_engine.application.decision_explanation_factory import DecisionExplanationFactory
+from trust_engine.application.reconciliation_trust_impact_evaluator import (
+    ReconciliationTrustImpactEvaluator,
+)
 from trust_engine.application.trust_model_policy import TrustModelPolicy
 from trust_engine.infrastructure.trust_record_repository import TrustRecordRepository
 from trust_engine.infrastructure.decision_ledger_repository import DecisionLedgerRepository
@@ -51,6 +54,9 @@ class TrustEngine:
         self.export_package_repository = ExportPackageRepository()
         self.decision_explanation_repository = DecisionExplanationRepository()
         self.reconciliation_evaluator = ReconciliationEvaluator()
+        self.reconciliation_trust_impact_evaluator = (
+            ReconciliationTrustImpactEvaluator(self.policy)
+        )
         self.reconciliation_record_repository = ReconciliationRecordRepository()
         self.reconciliation_decision_link_repository = (
             ReconciliationDecisionLinkRepository()
@@ -209,18 +215,6 @@ class TrustEngine:
             "exception_penalty": total_penalty,
         }
 
-    def _reconciliation_exception_statuses(self):
-        return self.policy.reconciliation_trust_impact_statuses()
-
-    def _reconciliation_exception_severities(self, reconciliation_records):
-        exception_statuses = self._reconciliation_exception_statuses()
-
-        return [
-            self.policy.reconciliation_trust_impact_severity()
-            for record in reconciliation_records
-            if record.status in exception_statuses
-        ]
-
     def determine_trust_with_reconciliation(
         self,
         evidence_count,
@@ -242,7 +236,9 @@ class TrustEngine:
             reconciliation_records.append(reconciliation_record)
 
         reconciliation_exception_severities = (
-            self._reconciliation_exception_severities(reconciliation_records)
+            self.reconciliation_trust_impact_evaluator.severities_for(
+                reconciliation_records
+            )
         )
 
         result = self.determine_trust(
