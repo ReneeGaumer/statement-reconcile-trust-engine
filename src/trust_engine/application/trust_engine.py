@@ -9,6 +9,7 @@ from trust_engine.application.audit_package_factory import AuditPackageFactory
 from trust_engine.application.exception_record_factory import ExceptionRecordFactory
 from trust_engine.application.export_package_factory import ExportPackageFactory
 from trust_engine.application.decision_explanation_factory import DecisionExplanationFactory
+from trust_engine.application.trust_model_policy import TrustModelPolicy
 from trust_engine.infrastructure.trust_record_repository import TrustRecordRepository
 from trust_engine.infrastructure.decision_ledger_repository import DecisionLedgerRepository
 from trust_engine.infrastructure.evidence_lineage_repository import EvidenceLineageRepository
@@ -20,9 +21,10 @@ from trust_engine.infrastructure.decision_explanation_repository import Decision
 
 class TrustEngine:
     def __init__(self):
+        self.policy = TrustModelPolicy()
         self.score_calculator = TrustScoreCalculator()
-        self.classifier = TrustClassifier()
-        self.exception_evaluator = ExceptionEvaluator()
+        self.classifier = TrustClassifier(self.policy)
+        self.exception_evaluator = ExceptionEvaluator(self.policy)
         self.embargo_evaluator = ExportEmbargoEvaluator()
         self.record_factory = TrustRecordFactory()
         self.decision_ledger_factory = DecisionLedgerFactory()
@@ -70,7 +72,7 @@ class TrustEngine:
             exception_count=len(exception_records),
             exception_penalty=total_penalty,
             embargo=embargo,
-            trust_calculation_rule="EVIDENCE_COUNT_TIMES_TEN_MINUS_EXCEPTION_PENALTY",
+            trust_calculation_rule=self.policy.SCORE_CALCULATION_RULE,
             evidence_lineage_reference=evidence_lineage.lineage_id,
             exception_record_references=[record.exception_id for record in exception_records],
         )
@@ -84,7 +86,7 @@ class TrustEngine:
             },
             {
                 "step": "EXCEPTION_RULES_EVALUATED",
-                "rule": "SEVERITY_TO_EXCEPTION_PENALTY",
+                "rule": self.policy.EXCEPTION_PENALTY_RULE,
                 "inputs": {"severities": [severity.value for severity in severities]},
                 "output": {
                     "exception_count": len(exception_records),
@@ -96,7 +98,7 @@ class TrustEngine:
             },
             {
                 "step": "TRUST_SCORE_CALCULATED",
-                "rule": "EVIDENCE_COUNT_TIMES_TEN_MINUS_EXCEPTION_PENALTY",
+                "rule": self.policy.SCORE_CALCULATION_RULE,
                 "inputs": {
                     "evidence_count": evidence_count,
                     "exception_penalty": total_penalty,
@@ -105,13 +107,13 @@ class TrustEngine:
             },
             {
                 "step": "EXPORT_EMBARGO_EVALUATED",
-                "rule": "CRITICAL_SEVERITY_TRIGGERS_EXPORT_EMBARGO",
+                "rule": self.policy.EMBARGO_RULE,
                 "inputs": {"severities": [severity.value for severity in severities]},
                 "output": embargo,
             },
             {
                 "step": "TRUST_CLASSIFICATION_ASSIGNED",
-                "rule": "TRUST_SCORE_THRESHOLD_WITH_EMBARGO_OVERRIDE",
+                "rule": self.policy.CLASSIFICATION_RULE,
                 "inputs": {"trust_score": score, "embargo": embargo},
                 "output": classification.value,
             },
@@ -129,7 +131,7 @@ class TrustEngine:
             [record.exception_id for record in exception_records],
         )
 
-        rule_version_reference = "TRUST_MODEL_RULES_V1"
+        rule_version_reference = self.policy.RULE_VERSION_REFERENCE
         decision_ledger = self.decision_ledger_factory.create(
             trust_record_reference=trust_record.trust_record_id,
             decision_explanation_reference=decision_explanation.decision_explanation_id,
@@ -164,7 +166,7 @@ class TrustEngine:
         self.audit_package_repository.save(audit_package)
 
         export_package = None
-        if classification.value != "EXPORT_EMBARGO":
+        if classification.value != self.policy.EMBARGO_CLASSIFICATION:
             export_package = self.export_package_factory.create(
                 trust_record.trust_record_id,
                 audit_package.audit_package_id,

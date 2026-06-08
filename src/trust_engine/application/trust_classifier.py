@@ -1,13 +1,11 @@
+from trust_engine.application.trust_model_policy import TrustModelPolicy
 from trust_engine.exceptions.trust_classification import TrustClassification
 
+
 class TrustClassifier:
+    def __init__(self, policy=None):
+        self.policy = policy or TrustModelPolicy()
+
     def classify(self, score: float, embargo: bool = False):
-        if embargo:
-            return TrustClassification.EXPORT_EMBARGO
-        if score >= 90:
-            return TrustClassification.CLEAN_EXPORT
-        if score >= 75:
-            return TrustClassification.EXPORT_WITH_WARNINGS
-        if score >= 50:
-            return TrustClassification.PARTIAL_EXPORT
-        return TrustClassification.UNSAFE_EXPORT
+        classification = self.policy.classify(score, embargo)
+        return TrustClassification(classification)
