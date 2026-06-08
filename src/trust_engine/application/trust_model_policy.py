@@ -5,16 +5,17 @@ class TrustModelPolicy:
     RULE_VERSION_REFERENCE = "TRUST_MODEL_RULES_V1"
 
     SEVERITY_PENALTIES = {
-        Severity.INFO: 0.0,
-        Severity.WARNING: 5.0,
-        Severity.HIGH: 20.0,
-        Severity.CRITICAL: 50.0,
+        Severity.INFO: 5.0,
+        Severity.WARNING: 15.0,
+        Severity.HIGH: 40.0,
+        Severity.CRITICAL: 100.0,
     }
 
     CLASSIFICATION_THRESHOLDS = [
-        (90.0, "CLEAN_EXPORT"),
-        (75.0, "EXPORT_WITH_WARNINGS"),
-        (50.0, "PARTIAL_EXPORT"),
+        (100.0, "CLEAN_EXPORT"),
+        (85.0, "EXPORT_WITH_WARNINGS"),
+        (60.0, "PARTIAL_EXPORT"),
+        (1.0, "UNSAFE_EXPORT"),
     ]
 
     EMBARGO_CLASSIFICATION = "EXPORT_EMBARGO"

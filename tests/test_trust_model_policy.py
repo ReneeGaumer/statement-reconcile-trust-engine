@@ -1,26 +1,28 @@
+from trust_engine.application.trust_engine import TrustEngine
 from trust_engine.application.trust_model_policy import TrustModelPolicy
 from trust_engine.exceptions.severity import Severity
 
 
-def test_trust_model_policy_defines_current_runtime_penalties():
+def test_trust_model_policy_defines_authoritative_penalties():
     policy = TrustModelPolicy()
 
-    assert policy.penalty_for(Severity.INFO) == 0.0
-    assert policy.penalty_for(Severity.WARNING) == 5.0
-    assert policy.penalty_for(Severity.HIGH) == 20.0
-    assert policy.penalty_for(Severity.CRITICAL) == 50.0
+    assert policy.penalty_for(Severity.INFO) == 5.0
+    assert policy.penalty_for(Severity.WARNING) == 15.0
+    assert policy.penalty_for(Severity.HIGH) == 40.0
+    assert policy.penalty_for(Severity.CRITICAL) == 100.0
 
 
-def test_trust_model_policy_defines_current_runtime_classifications():
+def test_trust_model_policy_defines_authoritative_classifications():
     policy = TrustModelPolicy()
 
     assert policy.classify(100.0, False) == "CLEAN_EXPORT"
-    assert policy.classify(90.0, False) == "CLEAN_EXPORT"
-    assert policy.classify(89.99, False) == "EXPORT_WITH_WARNINGS"
-    assert policy.classify(75.0, False) == "EXPORT_WITH_WARNINGS"
-    assert policy.classify(74.99, False) == "PARTIAL_EXPORT"
-    assert policy.classify(50.0, False) == "PARTIAL_EXPORT"
-    assert policy.classify(49.99, False) == "UNSAFE_EXPORT"
+    assert policy.classify(99.99, False) == "EXPORT_WITH_WARNINGS"
+    assert policy.classify(85.0, False) == "EXPORT_WITH_WARNINGS"
+    assert policy.classify(84.99, False) == "PARTIAL_EXPORT"
+    assert policy.classify(60.0, False) == "PARTIAL_EXPORT"
+    assert policy.classify(59.99, False) == "UNSAFE_EXPORT"
+    assert policy.classify(1.0, False) == "UNSAFE_EXPORT"
+    assert policy.classify(0.99, False) == "UNSAFE_EXPORT"
 
 
 def test_trust_model_policy_embargo_overrides_score():
@@ -34,8 +36,6 @@ def test_trust_model_policy_embargo_rule_uses_critical_severity():
 
     assert policy.should_embargo([Severity.WARNING]) is False
     assert policy.should_embargo([Severity.CRITICAL]) is True
-
-from trust_engine.application.trust_engine import TrustEngine
 
 
 def test_trust_engine_records_policy_rule_references_in_authoritative_chain():

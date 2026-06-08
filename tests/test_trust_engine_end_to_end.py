@@ -32,7 +32,7 @@ def test_trust_engine_end_to_end_export_embargo():
     assert embargo_lineage.source_document_reference == "statement.pdf"
     assert embargo_record.trust_classification == "EXPORT_EMBARGO"
     assert embargoed["embargo"] is True
-    assert embargoed["exception_penalty"] == 50.0
+    assert embargoed["exception_penalty"] == 100.0
     assert embargo_ledger.trust_record_reference == embargo_record.trust_record_id
     assert embargo_explanation.embargo is True
     assert embargo_record.evidence_lineage_reference == embargo_lineage.lineage_id
