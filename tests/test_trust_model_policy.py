@@ -34,3 +34,30 @@ def test_trust_model_policy_embargo_rule_uses_critical_severity():
 
     assert policy.should_embargo([Severity.WARNING]) is False
     assert policy.should_embargo([Severity.CRITICAL]) is True
+
+from trust_engine.application.trust_engine import TrustEngine
+
+
+def test_trust_engine_records_policy_rule_references_in_authoritative_chain():
+    engine = TrustEngine()
+    result = engine.determine_trust(10, [], "statement.pdf")
+    policy = engine.policy
+
+    trust_record = result["trust_record"]
+    decision_ledger = result["decision_ledger"]
+    decision_explanation = result["decision_explanation"]
+    audit_package = result["audit_package"]
+
+    assert trust_record.trust_calculation_rule == policy.SCORE_CALCULATION_RULE
+    assert decision_ledger.rule_version_reference == policy.RULE_VERSION_REFERENCE
+    assert audit_package.rule_version_references == [policy.RULE_VERSION_REFERENCE]
+
+    rules_by_step = {
+        step["step"]: step["rule"]
+        for step in decision_explanation.decision_path
+    }
+
+    assert rules_by_step["EXCEPTION_RULES_EVALUATED"] == policy.EXCEPTION_PENALTY_RULE
+    assert rules_by_step["TRUST_SCORE_CALCULATED"] == policy.SCORE_CALCULATION_RULE
+    assert rules_by_step["EXPORT_EMBARGO_EVALUATED"] == policy.EMBARGO_RULE
+    assert rules_by_step["TRUST_CLASSIFICATION_ASSIGNED"] == policy.CLASSIFICATION_RULE
