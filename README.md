@@ -2,7 +2,7 @@
 
 A Python Trust Assurance Platform for financial record verification.
 
-The system determines whether sufficient evidence exists to trust a record. It does not assume truth. It evaluates evidence, identifies exceptions, calculates trust, records decisions, preserves evidence lineage, and supports audit-ready outputs.
+The system determines whether sufficient evidence exists to trust a record. It does not assume truth. It evaluates evidence, identifies exceptions, reconciles financial values, calculates trust, records decisions, preserves evidence lineage, and supports audit-ready outputs.
 
 The product is trust, auditability, evidence, reconciliation, exception transparency, and defensible export certification.
 
@@ -12,8 +12,9 @@ The product is trust, auditability, evidence, reconciliation, exception transpar
 - Product governance, specifications, schemas, contracts, workflows, templates, and trust model definitions are tracked in the repository
 - Test suite exists under `tests/`
 - Verified test command: `python -m pytest`
-- Latest verified local result: `71 passed`
+- Latest verified local result: `118 passed`
 - Latest verified branch state: `main` clean and synced with `origin/main`
+- Latest verified commit: `d3d2218 Extract reconciliation trust impact evaluator`
 
 ## Current Implemented Assurance Capabilities
 
@@ -31,6 +32,14 @@ The product is trust, auditability, evidence, reconciliation, exception transpar
 - Defensive-copy protection on repository `save`, `get`, and `all`
 - Export reconstruction tests for clean export and embargo paths
 - Schema/model alignment checks for core authoritative records
+- Immutable reconciliation record creation
+- Deterministic reconciliation evaluation for exact matches, tolerance matches, mismatches, missing values, and unreconcilable values
+- Reconciliation record persistence
+- Reconciliation decision link creation and persistence
+- Audit reconstruction from reconciliation decision links
+- Reconciliation-derived trust impact through policy-defined status mapping
+- Dedicated reconciliation trust impact evaluator service
+- Reconciliation mismatch and unreconcilable value handling without silent correction
 
 ## Governing Documents
 
