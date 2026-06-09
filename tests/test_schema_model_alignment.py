@@ -4,6 +4,7 @@ from pathlib import Path
 
 from trust_engine.domain.authoritative_models import (
     AuditPackage,
+    CorrectionRecord,
     DecisionLedgerEntry,
     EvidenceLineageRecord,
     ExceptionRecordV2,
@@ -103,6 +104,16 @@ def test_exception_record_schema_required_concepts_are_represented():
             "evidence_reference": "source_reference",
             "description": "exception_reason",
             "status": "severity",
+        },
+    )
+
+
+def test_correction_lineage_schema_required_concepts_are_represented():
+    assert_required_schema_concepts_are_represented(
+        "architecture/data/correction-lineage.schema.json",
+        CorrectionRecord,
+        {
+            "timestamp": "correction_timestamp",
         },
     )
 

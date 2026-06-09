@@ -98,6 +98,18 @@ class ExceptionRecordV2:
 
 
 @dataclass
+class CorrectionRecord:
+    correction_id:str
+    original_value:str
+    corrected_value:str
+    correction_reason:str
+    correction_timestamp:datetime
+    correction_authorization_reference:str
+    evidence_reference:str
+    exception_reference:str
+
+
+@dataclass
 class ExportPackage:
     export_package_id:str
     trust_record_reference:str
