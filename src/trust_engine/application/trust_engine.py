@@ -62,9 +62,9 @@ class TrustEngine:
             ReconciliationDecisionLinkRepository()
         )
 
-    def determine_trust(self, evidence_count, severities, source_document_reference):
+    def determine_trust(self, evidence_count, severities, source_document_reference, prebuilt_exception_records=None):
         evidence_lineage = self.evidence_lineage_factory.create(source_document_reference)
-        exception_records = []
+        exception_records = list(prebuilt_exception_records or [])
 
         for severity in severities:
             penalty = self.exception_evaluator.penalty(severity)
@@ -235,16 +235,39 @@ class TrustEngine:
             self.reconciliation_record_repository.save(reconciliation_record)
             reconciliation_records.append(reconciliation_record)
 
-        reconciliation_exception_severities = (
-            self.reconciliation_trust_impact_evaluator.severities_for(
-                reconciliation_records
-            )
-        )
+        reconciliation_exception_records = []
+        trust_impact_statuses = self.policy.reconciliation_trust_impact_statuses()
+        trust_impact_severity = self.policy.reconciliation_trust_impact_severity()
+
+        for reconciliation_record in reconciliation_records:
+            if reconciliation_record.status in trust_impact_statuses:
+                penalty = self.exception_evaluator.penalty(trust_impact_severity)
+                exception_record = self.exception_record_factory.create(
+                    trust_impact_severity.value,
+                    penalty,
+                    self.policy.RECONCILIATION_TRUST_IMPACT_RULE,
+                    source_reference=reconciliation_record.reconciliation_id,
+                    field_name=reconciliation_record.field_name,
+                    original_value=reconciliation_record.actual_value,
+                    expected_value=reconciliation_record.expected_value,
+                    exception_reason=(
+                        reconciliation_record.status
+                        + " reconciliation status triggered trust exception for field "
+                        + reconciliation_record.field_name
+                    ),
+                )
+                self.exception_record_repository.save(exception_record)
+                reconciliation_exception_records.append(exception_record)
+
+        reconciliation_exception_severities = [
+            trust_impact_severity for _ in reconciliation_exception_records
+        ]
 
         result = self.determine_trust(
             evidence_count,
-            list(severities) + reconciliation_exception_severities,
+            list(severities),
             source_document_reference,
+            prebuilt_exception_records=reconciliation_exception_records,
         )
 
         reconciliation_record_references = [
