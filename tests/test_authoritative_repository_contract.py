@@ -1,4 +1,5 @@
 from trust_engine.application.audit_package_factory import AuditPackageFactory
+from trust_engine.application.correction_record_factory import CorrectionRecordFactory
 from trust_engine.application.decision_explanation_factory import DecisionExplanationFactory
 from trust_engine.application.decision_ledger_factory import DecisionLedgerFactory
 from trust_engine.application.evidence_lineage_factory import EvidenceLineageFactory
@@ -6,6 +7,7 @@ from trust_engine.application.exception_record_factory import ExceptionRecordFac
 from trust_engine.application.export_package_factory import ExportPackageFactory
 from trust_engine.application.trust_record_factory import TrustRecordFactory
 from trust_engine.infrastructure.audit_package_repository import AuditPackageRepository
+from trust_engine.infrastructure.correction_record_repository import CorrectionRecordRepository
 from trust_engine.infrastructure.decision_explanation_repository import (
     DecisionExplanationRepository,
 )
@@ -41,23 +43,23 @@ def build_repository_cases():
     )
 
     decision_explanation = DecisionExplanationFactory().create(
-    trust_record.trust_record_id,
-    evidence_count=10,
-    exception_count=1,
-    exception_penalty=10,
-    embargo=False,
-    trust_score=90.0,
-    trust_classification="EXPORT_WITH_WARNINGS",
-    decision_path=[
-        {
-            "step": "TRUST_SCORE_CALCULATED",
-            "rule": "TEST_RULE",
-            "inputs": {"evidence_count": 10, "exception_penalty": 10},
-            "output": 90.0,
-        }
-    ],
-    exception_record_references=["EX-001"],
-)
+        trust_record.trust_record_id,
+        evidence_count=10,
+        exception_count=1,
+        exception_penalty=10,
+        embargo=False,
+        trust_score=90.0,
+        trust_classification="EXPORT_WITH_WARNINGS",
+        decision_path=[
+            {
+                "step": "TRUST_SCORE_CALCULATED",
+                "rule": "TEST_RULE",
+                "inputs": {"evidence_count": 10, "exception_penalty": 10},
+                "output": 90.0,
+            }
+        ],
+        exception_record_references=["EX-001"],
+    )
 
     decision_ledger = DecisionLedgerFactory().create(
         trust_record_reference=trust_record.trust_record_id,
@@ -92,6 +94,15 @@ def build_repository_cases():
         original_value="100.00",
         expected_value="100.00",
         exception_reason="Repository contract test exception.",
+    )
+
+    correction_record = CorrectionRecordFactory().create(
+        original_value="100.00",
+        corrected_value="100.01",
+        correction_reason="Repository contract test correction.",
+        correction_authorization_reference="GOV-001",
+        evidence_reference=evidence_lineage.lineage_id,
+        exception_reference=exception_record.exception_id,
     )
 
     export_package = ExportPackageFactory().create(
@@ -136,6 +147,13 @@ def build_repository_cases():
             exception_record.exception_id,
             "penalty",
             999,
+        ),
+        (
+            CorrectionRecordRepository(),
+            correction_record,
+            correction_record.correction_id,
+            "corrected_value",
+            "999.99",
         ),
         (
             ExportPackageRepository(),
