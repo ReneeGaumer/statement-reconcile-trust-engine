@@ -1,12 +1,10 @@
 from datetime import UTC, datetime
 
-from trust_engine.application.trust_engine import TrustEngine
 from trust_engine.domain.authoritative_models import (
     RuleApprovalRecord,
     RuleGovernanceRecord,
     RuleVersionRecord,
 )
-from trust_engine.exceptions.severity import Severity
 
 
 def authorize_engine_rule_version(engine):
@@ -42,23 +40,3 @@ def authorize_engine_rule_version(engine):
             "Approved rule version authorized for governed trust execution.",
         )
     )
-
-
-def test_trust_engine_end_to_end_clean_export():
-    engine = TrustEngine()
-    authorize_engine_rule_version(engine)
-
-    result = engine.determine_trust(10, [], "statement.pdf")
-
-    assert result["trust_record"].trust_classification == "CLEAN_EXPORT"
-    assert result["export_package"] is not None
-
-
-def test_trust_engine_end_to_end_export_embargo():
-    engine = TrustEngine()
-    authorize_engine_rule_version(engine)
-
-    result = engine.determine_trust(10, [Severity.CRITICAL], "statement.pdf")
-
-    assert result["trust_record"].trust_classification == "EXPORT_EMBARGO"
-    assert result["export_package"] is None

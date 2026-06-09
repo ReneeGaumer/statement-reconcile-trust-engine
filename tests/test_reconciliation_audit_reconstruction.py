@@ -1,9 +1,52 @@
+from datetime import UTC, datetime
+
 from trust_engine.application.trust_engine import TrustEngine
+from trust_engine.domain.authoritative_models import (
+    RuleApprovalRecord,
+    RuleGovernanceRecord,
+    RuleVersionRecord,
+)
 from trust_engine.reconciliation.reconciliation_status import ReconciliationStatus
+
+
+def authorize_engine_rule_version(engine):
+    rule_version_reference = engine.policy.RULE_VERSION_REFERENCE
+
+    engine.rule_version_repository.save(
+        RuleVersionRecord(
+            rule_version_reference,
+            "TRUST_MODEL_RULES",
+            "ACTIVE",
+            datetime.now(UTC),
+            "RULE_FP",
+            None,
+        )
+    )
+    engine.rule_approval_repository.save(
+        RuleApprovalRecord(
+            "APPROVAL-001",
+            rule_version_reference,
+            "GOVERNANCE_AUTHORITY",
+            datetime.now(UTC),
+            "APPROVED",
+        )
+    )
+    engine.rule_governance_repository.save(
+        RuleGovernanceRecord(
+            "GOV-001",
+            rule_version_reference,
+            "APPROVAL-001",
+            "AUTHORIZED",
+            datetime.now(UTC),
+            "GOVERNANCE_AUTHORITY",
+            "Approved rule version authorized for governed trust execution.",
+        )
+    )
 
 
 def test_reconciliation_decision_link_reconstructs_trust_and_reconciliation_chain():
     engine = TrustEngine()
+    authorize_engine_rule_version(engine)
 
     result = engine.determine_trust_with_reconciliation(
         evidence_count=10,
@@ -62,6 +105,7 @@ def test_reconciliation_decision_link_reconstructs_trust_and_reconciliation_chai
 
 def test_reconciliation_decision_link_reconstructs_mismatch_without_correction():
     engine = TrustEngine()
+    authorize_engine_rule_version(engine)
 
     result = engine.determine_trust_with_reconciliation(
         evidence_count=10,

@@ -1,6 +1,48 @@
+from datetime import UTC, datetime
+
 from trust_engine.application.trust_engine import TrustEngine
 from trust_engine.application.trust_model_policy import TrustModelPolicy
+from trust_engine.domain.authoritative_models import (
+    RuleApprovalRecord,
+    RuleGovernanceRecord,
+    RuleVersionRecord,
+)
 from trust_engine.exceptions.severity import Severity
+
+
+def authorize_engine_rule_version(engine):
+    rule_version_reference = engine.policy.RULE_VERSION_REFERENCE
+
+    engine.rule_version_repository.save(
+        RuleVersionRecord(
+            rule_version_reference,
+            "TRUST_MODEL_RULES",
+            "ACTIVE",
+            datetime.now(UTC),
+            "RULE_FP",
+            None,
+        )
+    )
+    engine.rule_approval_repository.save(
+        RuleApprovalRecord(
+            "APPROVAL-001",
+            rule_version_reference,
+            "GOVERNANCE_AUTHORITY",
+            datetime.now(UTC),
+            "APPROVED",
+        )
+    )
+    engine.rule_governance_repository.save(
+        RuleGovernanceRecord(
+            "GOV-001",
+            rule_version_reference,
+            "APPROVAL-001",
+            "AUTHORIZED",
+            datetime.now(UTC),
+            "GOVERNANCE_AUTHORITY",
+            "Approved rule version authorized for governed trust execution.",
+        )
+    )
 
 
 def test_trust_model_policy_defines_authoritative_penalties():
@@ -40,6 +82,8 @@ def test_trust_model_policy_embargo_rule_uses_critical_severity():
 
 def test_trust_engine_records_policy_rule_references_in_authoritative_chain():
     engine = TrustEngine()
+    authorize_engine_rule_version(engine)
+
     result = engine.determine_trust(10, [], "statement.pdf")
     policy = engine.policy
 

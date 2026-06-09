@@ -13,6 +13,10 @@ from trust_engine.application.reconciliation_trust_impact_evaluator import (
     ReconciliationTrustImpactEvaluator,
 )
 from trust_engine.application.trust_model_policy import TrustModelPolicy
+from trust_engine.application.governance_chain_resolver import GovernanceChainResolver
+from trust_engine.infrastructure.rule_version_repository import RuleVersionRepository
+from trust_engine.infrastructure.rule_approval_repository import RuleApprovalRepository
+from trust_engine.infrastructure.rule_governance_repository import RuleGovernanceRepository
 from trust_engine.infrastructure.trust_record_repository import TrustRecordRepository
 from trust_engine.infrastructure.decision_ledger_repository import DecisionLedgerRepository
 from trust_engine.infrastructure.evidence_lineage_repository import EvidenceLineageRepository
@@ -35,6 +39,14 @@ from trust_engine.reconciliation.reconciliation_record_repository import (
 class TrustEngine:
     def __init__(self):
         self.policy = TrustModelPolicy()
+        self.rule_version_repository = RuleVersionRepository()
+        self.rule_approval_repository = RuleApprovalRepository()
+        self.rule_governance_repository = RuleGovernanceRepository()
+        self.governance_chain_resolver = GovernanceChainResolver(
+            self.rule_version_repository,
+            self.rule_approval_repository,
+            self.rule_governance_repository,
+        )
         self.score_calculator = TrustScoreCalculator()
         self.classifier = TrustClassifier()
         self.exception_evaluator = ExceptionEvaluator()
@@ -63,6 +75,12 @@ class TrustEngine:
         )
 
     def determine_trust(self, evidence_count, severities, source_document_reference, prebuilt_exception_records=None):
+        rule_version_reference = self.policy.RULE_VERSION_REFERENCE
+        if not self.governance_chain_resolver.is_rule_authorized(rule_version_reference):
+            raise PermissionError(
+                f"unauthorized rule version: {rule_version_reference}"
+            )
+
         evidence_lineage = self.evidence_lineage_factory.create(source_document_reference)
         exception_records = list(prebuilt_exception_records or [])
 
@@ -160,7 +178,6 @@ class TrustEngine:
             [record.exception_id for record in exception_records],
         )
 
-        rule_version_reference = self.policy.RULE_VERSION_REFERENCE
         decision_ledger = self.decision_ledger_factory.create(
             trust_record_reference=trust_record.trust_record_id,
             decision_explanation_reference=decision_explanation.decision_explanation_id,
