@@ -110,6 +110,16 @@ class CorrectionRecord:
 
 
 @dataclass
+class CorrectionAuthorizationRecord:
+    correction_authorization_id:str
+    correction_id_reference:str
+    authorized_by:str
+    authorization_timestamp:datetime
+    authorization_status:str
+    authorization_reason:str
+
+
+@dataclass
 class ExportPackage:
     export_package_id:str
     trust_record_reference:str
