@@ -6,7 +6,7 @@ The system does not determine whether data is true.
 
 The system determines whether sufficient evidence exists to justify trusting the data.
 
-The product is trust, auditability, evidence lineage, reconciliation transparency, exception transparency, decision reconstruction, and defensible export certification.
+The product is trust, auditability, evidence lineage, reconciliation transparency, correction governance, exception transparency, decision reconstruction, and defensible export certification.
 
 Every trust determination must satisfy the Courtroom Test:
 
@@ -17,7 +17,7 @@ Every trust determination must satisfy the Courtroom Test:
 * Deterministic
 * Auditable
 
-A trust decision must be traceable through authoritative records, evidence lineage, deterministic rules, exception records, reconciliation records, decision records, and audit reconstruction.
+A trust decision must be traceable through authoritative records, evidence lineage, deterministic rules, exception records, correction records, reconciliation records, decision records, and audit reconstruction.
 
 ---
 
@@ -27,7 +27,7 @@ Trust is not truth.
 
 The platform evaluates whether sufficient evidence exists to support trust in a record.
 
-When evidence is insufficient, conflicting, incomplete, unreconcilable, or embargo-triggering, the system records exceptions and adjusts trust outcomes accordingly.
+When evidence is insufficient, conflicting, incomplete, unreconcilable, correction-related, or embargo-triggering, the system records exceptions and adjusts trust outcomes accordingly.
 
 The system prefers explicit exceptions over unsupported conclusions.
 
@@ -49,6 +49,7 @@ These records are the system of record.
 * Decision Explanation
 * Audit Package
 * Exception Record
+* Correction Record
 * Reconciliation Record
 * Reconciliation Decision Link
 
@@ -62,7 +63,7 @@ Examples of derived artifacts include:
 * External presentations
 * Data extracts
 
-Authoritative records are the system of record for trust determinations, evidence lineage, exceptions, reconciliation outcomes, decisions, and audit reconstruction.
+Authoritative records are the system of record for trust determinations, evidence lineage, exceptions, corrections, reconciliation outcomes, decisions, and audit reconstruction.
 
 ---
 
@@ -85,9 +86,9 @@ python -m pytest
 Verified at last README update:
 
 ```text
-119 passed
+124 passed
 main clean and synced with origin/main
-e0fa665 Add field-specific reconciliation exception lineage
+68e42db Register correction authoritative records
 ```
 
 ---
