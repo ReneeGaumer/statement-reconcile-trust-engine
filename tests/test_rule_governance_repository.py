@@ -1,7 +1,7 @@
 from datetime import datetime, UTC
 
 from trust_engine.domain.authoritative_models import RuleGovernanceRecord
-from trust_engine.infrastructure.authoritative_repository import AuthoritativeRepository
+from trust_engine.infrastructure.rule_governance_repository import RuleGovernanceRepository
 
 
 def test_rule_governance_repository_stores_authoritative_governance_chain():
@@ -15,7 +15,7 @@ def test_rule_governance_repository_stores_authoritative_governance_chain():
         governance_reason="Approved rule version authorized for governed trust execution",
     )
 
-    repo = AuthoritativeRepository("governance_id")
+    repo = RuleGovernanceRepository()
     repo.save(record)
 
     loaded = repo.get("GOV-001")

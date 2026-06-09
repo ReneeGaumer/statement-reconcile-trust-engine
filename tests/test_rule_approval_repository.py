@@ -1,7 +1,7 @@
 from datetime import datetime, UTC
 
 from trust_engine.domain.authoritative_models import RuleApprovalRecord
-from trust_engine.infrastructure.authoritative_repository import AuthoritativeRepository
+from trust_engine.infrastructure.rule_approval_repository import RuleApprovalRepository
 
 
 def test_rule_approval_repository_stores_rule_approval_authority():
@@ -13,7 +13,7 @@ def test_rule_approval_repository_stores_rule_approval_authority():
         approval_status="APPROVED",
     )
 
-    repo = AuthoritativeRepository("approval_id")
+    repo = RuleApprovalRepository()
     repo.save(record)
 
     loaded = repo.get("APPROVAL-001")

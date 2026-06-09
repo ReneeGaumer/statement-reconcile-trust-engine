@@ -1,7 +1,7 @@
 from datetime import datetime, UTC
 
 from trust_engine.domain.authoritative_models import RuleVersionRecord
-from trust_engine.infrastructure.authoritative_repository import AuthoritativeRepository
+from trust_engine.infrastructure.rule_version_repository import RuleVersionRepository
 
 
 def test_rule_version_repository_stores_authoritative_rule_version():
@@ -14,7 +14,7 @@ def test_rule_version_repository_stores_authoritative_rule_version():
         predecessor_version=None,
     )
 
-    repo = AuthoritativeRepository("rule_version_id")
+    repo = RuleVersionRepository()
     repo.save(record)
 
     loaded = repo.get("TRUST_MODEL_RULES_V1")
