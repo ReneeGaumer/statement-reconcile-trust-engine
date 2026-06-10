@@ -50,8 +50,13 @@ These records are the system of record.
 * Audit Package
 * Exception Record
 * Correction Record
+* Correction Authorization Record
 * Reconciliation Record
 * Reconciliation Decision Link
+* Export Package
+* Rule Version Record
+* Rule Approval Record
+* Rule Governance Record
 
 Derived artifacts are not authoritative records.
 
@@ -63,7 +68,7 @@ Examples of derived artifacts include:
 * External presentations
 * Data extracts
 
-Authoritative records are the system of record for trust determinations, evidence lineage, exceptions, corrections, reconciliation outcomes, decisions, and audit reconstruction.
+Authoritative records are the system of record for trust determinations, evidence lineage, exceptions, corrections, correction authorization, reconciliation outcomes, decisions, governance authorization, audit reconstruction, and export certification.
 
 ---
 
