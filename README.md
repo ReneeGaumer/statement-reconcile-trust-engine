@@ -133,74 +133,120 @@ The objective is a defensible trust determination supported by authoritative rec
 ## Trust Determination
 
 * Trust score calculation
-* Trust classification
+* Trust classification assignment
 * Exception penalty evaluation
 * Export embargo evaluation
-* Deterministic trust classification assignment
-* Trust record creation and persistence
+* Deterministic trust outcome generation
+* Trust record creation
+* Trust record persistence
+* End-to-end trust determination workflows
 
 ## Evidence Lineage
 
-* Evidence lineage creation
+* Evidence lineage record creation
 * Evidence lineage persistence
-* Source document reference capture
-* Evidence reference propagation into decision records
+* Source-document reference capture
+* Evidence reference propagation into authoritative decision records
+* Evidence traceability through authoritative chains
 
 ## Exception Framework
 
 * Exception record creation
 * Exception record persistence
-* Severity-based penalty evaluation
+* Severity-based trust impact evaluation
 * Exception lineage preservation
-* Exception reference propagation into authoritative records
+* Exception reference propagation through authoritative records
+* Reconciliation-derived exception generation
 
 ## Decision Governance
 
 * Decision explanation creation
 * Decision path capture
 * Decision ledger creation
-* Rule version recording
 * Decision rationale preservation
-* Audit reconstruction support
+* Rule-version reference recording
+* Decision reconstruction support
+* Authoritative decision traceability
 
 ## Audit Assurance
 
 * Audit package creation
+* Audit package validation
 * Reconstruction linkage preservation
 * Audit-ready trust determination records
-* End-to-end decision traceability
+* End-to-end authoritative chain reconstruction
+* Reconciliation-aware audit reconstruction
 
 ## Export Assurance
 
-* Export package generation for export-eligible outcomes
+* Export package generation
+* Export package persistence
+* Export reconstruction validation
+* Authoritative export-chain reconstruction
 * EXPORT_EMBARGO hard-stop enforcement
-* Export suppression when embargo conditions exist
+* Export suppression under embargo conditions
 
 ## Reconciliation Assurance
 
 * Immutable reconciliation record creation
 * Deterministic reconciliation evaluation
-* Exact match evaluation
-* Tolerance match evaluation
+* Exact-match evaluation
+* Tolerance-match evaluation
 * Mismatch evaluation
-* Missing value evaluation
-* Unreconcilable value evaluation
+* Missing-expected-value evaluation
+* Missing-actual-value evaluation
+* Unreconcilable-value evaluation
 * Reconciliation record persistence
 * Reconciliation-derived trust impact evaluation
 * Policy-driven reconciliation trust impact mapping
 * Field-specific reconciliation exception lineage
-* Reconciliation decision link creation
-* Reconciliation decision link persistence
+* Reconciliation decision-link creation
+* Reconciliation decision-link persistence
 * Reconciliation-to-decision traceability
 * Audit reconstruction through reconciliation lineage
 * Preservation of original values without silent correction
 
+## Correction Governance
+
+* Correction record creation
+* Correction record validation
+* Correction record persistence
+* Correction authorization record persistence
+* Correction lineage preservation
+* Original-value preservation
+* Explicit correction governance without silent modification
+
+## Rule Governance
+
+* Rule version records
+* Rule approval records
+* Rule governance records
+* Governance-chain resolution
+* Governance authorization validation
+* Rule authorization enforcement before trust determination
+* Governance-linked decision traceability
+
+## Policy Governance
+
+* Authoritative trust-model policy definitions
+* Policy-driven trust classification thresholds
+* Policy-driven trust impact mappings
+* Runtime policy loading
+* Policy-source metadata exposure
+* Policy drift detection
+* Runtime-policy alignment validation
+
 ## Repository Integrity
 
+* Append-only authoritative repositories
 * Authoritative repository overwrite protection
-* Defensive-copy protection on repository save, get, and all operations
-* Schema/model alignment validation
+* Defensive-copy protection on save operations
+* Defensive-copy protection on retrieval operations
+* Stored-record immutability protection
+* Schema-to-model alignment validation
 * Export reconstruction validation
+* Authoritative chain validation
+
 
 ---
 
