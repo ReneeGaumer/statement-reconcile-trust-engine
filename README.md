@@ -80,18 +80,16 @@ Repository status changes over time and should be revalidated during future deve
 Verified test command:
 
 ```text
-python -m pytest
+python -m pytest -q
 ```
 
 Verified at last README update:
 
 ```text
-124 passed
+138 passed
 main clean and synced with origin/main
-68e42db Register correction authoritative records
+a5bc6b2 Deduplicate governance authorization setup across tests
 ```
-
----
 
 # Trust Assurance Architecture
 
