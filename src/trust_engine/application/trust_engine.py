@@ -82,14 +82,24 @@ class TrustEngine:
             ReconciliationDecisionLinkRepository()
         )
 
-    def determine_trust(self, evidence_count, severities, source_document_reference, prebuilt_exception_records=None):
+    def determine_trust(
+        self,
+        evidence_count,
+        severities,
+        source_document_reference,
+        evidence_lineage_metadata=None,
+        prebuilt_exception_records=None,
+    ):
         rule_version_reference = self.policy.RULE_VERSION_REFERENCE
         if not self.governance_chain_resolver.is_rule_authorized(rule_version_reference):
             raise PermissionError(
                 f"unauthorized rule version: {rule_version_reference}"
             )
 
-        evidence_lineage = self.evidence_lineage_factory.create(source_document_reference)
+        evidence_lineage = self.evidence_lineage_factory.create(
+            source_document_reference,
+            **(evidence_lineage_metadata or {}),
+        )
         evidence_sufficiency_result = self.evidence_sufficiency_evaluator.evaluate(
             evidence_lineage
         )
@@ -137,7 +147,10 @@ class TrustEngine:
             {
                 "step": "EVIDENCE_LINEAGE_CREATED",
                 "rule": "SOURCE_DOCUMENT_REFERENCE_CAPTURED",
-                "inputs": {"source_document_reference": source_document_reference},
+                "inputs": {
+                    "source_document_reference": source_document_reference,
+                    "evidence_lineage_metadata": evidence_lineage_metadata or {},
+                },
                 "output": evidence_lineage.lineage_id,
             },
             {
@@ -273,6 +286,7 @@ class TrustEngine:
         severities,
         source_document_reference,
         reconciliation_inputs,
+        evidence_lineage_metadata=None,
     ):
         reconciliation_records = []
 
@@ -315,6 +329,7 @@ class TrustEngine:
             evidence_count,
             list(severities),
             source_document_reference,
+            evidence_lineage_metadata=evidence_lineage_metadata,
             prebuilt_exception_records=reconciliation_exception_records,
         )
 

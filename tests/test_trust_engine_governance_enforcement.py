@@ -1,5 +1,8 @@
 from trust_engine.application.trust_engine import TrustEngine
-from tests.governance_test_helpers import authorize_engine_rule_version
+from tests.governance_test_helpers import (
+    authorize_engine_rule_version,
+    complete_evidence_lineage_metadata,
+)
 
 
 def test_trust_engine_rejects_missing_governance_before_trust_artifacts():
@@ -21,7 +24,12 @@ def test_trust_engine_allows_export_when_rule_version_is_authorized():
     engine = TrustEngine()
     authorize_engine_rule_version(engine)
 
-    result = engine.determine_trust(10, [], "statement.pdf")
+    result = engine.determine_trust(
+        10,
+        [],
+        "statement.pdf",
+        evidence_lineage_metadata=complete_evidence_lineage_metadata(),
+    )
 
     assert result["trust_record"].trust_classification == "CLEAN_EXPORT"
     assert result["decision_ledger"].rule_version_reference == (

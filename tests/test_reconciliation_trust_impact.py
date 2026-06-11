@@ -1,5 +1,8 @@
 from trust_engine.application.trust_engine import TrustEngine
-from tests.governance_test_helpers import authorize_engine_rule_version
+from tests.governance_test_helpers import (
+    authorize_engine_rule_version,
+    complete_evidence_lineage_metadata,
+)
 
 
 def test_reconciliation_mismatch_creates_trust_exception():
@@ -17,6 +20,7 @@ def test_reconciliation_mismatch_creates_trust_exception():
                 "actual_value": "900.00",
             }
         ],
+        evidence_lineage_metadata=complete_evidence_lineage_metadata(),
     )
 
     reconciliation_record = result["reconciliation_records"][0]
@@ -54,6 +58,7 @@ def test_reconciliation_match_does_not_create_trust_exception():
                 "actual_value": "1000.00",
             }
         ],
+        evidence_lineage_metadata=complete_evidence_lineage_metadata(),
     )
 
     assert result["reconciliation_records"][0].status == "MATCH"
@@ -78,6 +83,7 @@ def test_reconciliation_unreconcilable_creates_trust_exception_without_correctio
                 "actual_value": "1000.00",
             }
         ],
+        evidence_lineage_metadata=complete_evidence_lineage_metadata(),
     )
 
     reconciliation_record = result["reconciliation_records"][0]
@@ -110,6 +116,7 @@ def test_reconciliation_mismatch_exception_is_field_specific_and_preserves_value
                 "actual_value": "900.00",
             }
         ],
+        evidence_lineage_metadata=complete_evidence_lineage_metadata(),
     )
 
     reconciliation_record = result["reconciliation_records"][0]

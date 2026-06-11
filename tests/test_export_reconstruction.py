@@ -1,13 +1,21 @@
 from trust_engine.application.trust_engine import TrustEngine
 from trust_engine.exceptions.severity import Severity
-from tests.governance_test_helpers import authorize_engine_rule_version
+from tests.governance_test_helpers import (
+    authorize_engine_rule_version,
+    complete_evidence_lineage_metadata,
+)
 
 
 def test_export_package_id_reconstructs_full_authoritative_chain():
     engine = TrustEngine()
     authorize_engine_rule_version(engine)
 
-    result = engine.determine_trust(10, [], "statement.pdf")
+    result = engine.determine_trust(
+        10,
+        [],
+        "statement.pdf",
+        evidence_lineage_metadata=complete_evidence_lineage_metadata(),
+    )
 
     export_package_id = result["export_package"].export_package_id
     export_package = engine.export_package_repository.get(export_package_id)
@@ -56,6 +64,7 @@ def test_export_package_id_reconstructs_full_authoritative_chain():
 
     required_steps = {
         "EVIDENCE_LINEAGE_CREATED",
+        "EVIDENCE_SUFFICIENCY_EVALUATED",
         "TRUST_POLICY_SOURCE_LOADED",
         "EXCEPTION_RULES_EVALUATED",
         "TRUST_SCORE_CALCULATED",
@@ -90,7 +99,12 @@ def test_export_embargo_has_no_export_package_but_preserves_audit_chain():
     engine = TrustEngine()
     authorize_engine_rule_version(engine)
 
-    result = engine.determine_trust(10, [Severity.CRITICAL], "statement.pdf")
+    result = engine.determine_trust(
+        10,
+        [Severity.CRITICAL],
+        "statement.pdf",
+        evidence_lineage_metadata=complete_evidence_lineage_metadata(),
+    )
 
     assert result["export_package"] is None
     assert result["trust_record"].trust_classification == "EXPORT_EMBARGO"

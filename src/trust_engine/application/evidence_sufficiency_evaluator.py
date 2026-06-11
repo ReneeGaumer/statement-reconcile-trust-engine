@@ -140,9 +140,8 @@ class EvidenceSufficiencyEvaluator:
             field_name=finding["field_name"],
             original_value=str(finding["observed_value"]),
             expected_value="SUFFICIENT_EVIDENCE_LINEAGE",
-            exception_reason=(
-                finding["rationale"]
-                + "; remediation_guidance="
-                + finding["remediation_guidance"]
-            ),
+            exception_reason=finding["rationale"],
+            remediation_guidance=finding["remediation_guidance"],
+            status="ACTIVE",
+            active=True,
         )

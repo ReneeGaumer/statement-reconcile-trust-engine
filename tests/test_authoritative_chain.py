@@ -1,13 +1,21 @@
 from trust_engine.application.trust_engine import TrustEngine
 from trust_engine.exceptions.severity import Severity
-from tests.governance_test_helpers import authorize_engine_rule_version
+from tests.governance_test_helpers import (
+    authorize_engine_rule_version,
+    complete_evidence_lineage_metadata,
+)
 
 
 def test_authoritative_chain_export_embargo():
     engine = TrustEngine()
     authorize_engine_rule_version(engine)
 
-    result = engine.determine_trust(10, [Severity.CRITICAL], "statement.pdf")
+    result = engine.determine_trust(
+        10,
+        [Severity.CRITICAL],
+        "statement.pdf",
+        evidence_lineage_metadata=complete_evidence_lineage_metadata(),
+    )
 
     lineage = result["evidence_lineage"]
     exceptions = result["exception_records"]

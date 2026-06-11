@@ -1,6 +1,9 @@
 from trust_engine.application.trust_engine import TrustEngine
 from trust_engine.reconciliation.reconciliation_status import ReconciliationStatus
-from tests.governance_test_helpers import authorize_engine_rule_version
+from tests.governance_test_helpers import (
+    authorize_engine_rule_version,
+    complete_evidence_lineage_metadata,
+)
 
 
 def test_reconciliation_decision_link_reconstructs_trust_and_reconciliation_chain():
@@ -24,6 +27,7 @@ def test_reconciliation_decision_link_reconstructs_trust_and_reconciliation_chai
                 "tolerance": "0.01",
             },
         ],
+        evidence_lineage_metadata=complete_evidence_lineage_metadata(),
     )
 
     link_id = result["reconciliation_decision_link_reference"]
@@ -77,6 +81,7 @@ def test_reconciliation_decision_link_reconstructs_mismatch_without_correction()
                 "actual_value": "1000.00",
             }
         ],
+        evidence_lineage_metadata=complete_evidence_lineage_metadata(),
     )
 
     link = engine.reconciliation_decision_link_repository.get(

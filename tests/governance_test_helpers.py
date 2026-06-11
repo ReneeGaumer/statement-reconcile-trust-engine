@@ -40,3 +40,15 @@ def authorize_engine_rule_version(engine):
             "Approved rule version authorized for governed trust execution.",
         )
     )
+
+
+def complete_evidence_lineage_metadata():
+    return {
+        "source_location": "bank-portal",
+        "page_reference": "page-1",
+        "acquisition_method": "UPLOAD",
+        "evidence_hash": "hash-001",
+        "chain_of_custody": ["uploaded-by-user"],
+        "evidence_type": "BANK_STATEMENT",
+        "evidence_status": "CAPTURED",
+    }
