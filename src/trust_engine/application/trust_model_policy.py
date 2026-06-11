@@ -22,9 +22,13 @@ class TrustModelPolicy:
     RECONCILIATION_TRUST_IMPACT_RULE = (
         "RECONCILIATION_EXCEPTION_STATUS_TRIGGERS_WARNING"
     )
+    AUDIT_RECONSTRUCTION_RULE = "AUDIT_PACKAGE_RECONSTRUCTION_REQUIRED"
 
     REQUIRED_IMPACT_KEYS = ("INFO", "WARNING", "HIGH", "CRITICAL")
     REQUIRED_THRESHOLD_KEYS = ("100", "85-99", "60-84", "1-59")
+
+    def reconstruction_failure_severity(self):
+        return Severity.HIGH
 
     def __init__(self, trust_model_dir=None):
         self.trust_model_dir = (

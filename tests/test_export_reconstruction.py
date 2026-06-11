@@ -139,3 +139,33 @@ def test_export_embargo_has_no_export_package_but_preserves_audit_chain():
     assert outputs_by_step["TRUST_POLICY_SOURCE_LOADED"] == (
         engine.policy.policy_source_metadata()
     )
+
+def test_broken_audit_chain_generates_reconstruction_failure_exception():
+    engine = TrustEngine()
+    authorize_engine_rule_version(engine)
+
+    result = engine.determine_trust(
+        10,
+        [],
+        "statement.pdf",
+        evidence_lineage_metadata=complete_evidence_lineage_metadata(),
+    )
+
+    stored_audit_package = engine.audit_package_repository.records[
+        result["audit_package"].audit_package_id
+    ]
+    stored_audit_package.decision_ledger_reference = "MISSING-DECISION-LEDGER"
+
+    reconstruction_exception = engine.generate_reconstruction_failure_exception(
+        result["audit_package"].audit_package_id
+    )
+
+    assert reconstruction_exception.rule_name == "AUDIT_PACKAGE_RECONSTRUCTION_REQUIRED"
+    assert reconstruction_exception.field_name == "decision_ledger_reference"
+    assert reconstruction_exception.source_reference == result["audit_package"].audit_package_id
+    assert reconstruction_exception.original_value == "MISSING-DECISION-LEDGER"
+    assert reconstruction_exception.expected_value == "EXISTING_AUTHORITATIVE_RECORD"
+    assert "decision ledger" in reconstruction_exception.exception_reason.lower()
+    assert engine.exception_record_repository.get(
+        reconstruction_exception.exception_id
+    ) == reconstruction_exception

@@ -286,6 +286,65 @@ class TrustEngine:
             "exception_penalty": total_penalty,
         }
 
+    def generate_reconstruction_failure_exception(self, audit_package_id):
+        audit_package = self.audit_package_repository.get(audit_package_id)
+        if audit_package is None:
+            raise ValueError(f"audit package not found: {audit_package_id}")
+
+        reconstruction_checks = (
+            (
+                "trust_record_reference",
+                audit_package.trust_record_reference,
+                self.trust_record_repository,
+                "trust record",
+            ),
+            (
+                "evidence_lineage_reference",
+                audit_package.evidence_lineage_reference,
+                self.evidence_lineage_repository,
+                "evidence lineage",
+            ),
+            (
+                "decision_ledger_reference",
+                audit_package.decision_ledger_reference,
+                self.decision_ledger_repository,
+                "decision ledger",
+            ),
+            (
+                "decision_explanation_reference",
+                audit_package.decision_explanation_reference,
+                self.decision_explanation_repository,
+                "decision explanation",
+            ),
+        )
+
+        for field_name, reference, repository, record_name in reconstruction_checks:
+            if repository.get(reference) is None:
+                severity = self.policy.reconstruction_failure_severity()
+                exception_record = self.exception_record_factory.create(
+                    severity.value,
+                    self.policy.penalty_for(severity),
+                    self.policy.AUDIT_RECONSTRUCTION_RULE,
+                    source_reference=audit_package.audit_package_id,
+                    field_name=field_name,
+                    original_value=reference,
+                    expected_value="EXISTING_AUTHORITATIVE_RECORD",
+                    exception_reason=(
+                        "Audit package cannot be reconstructed because the "
+                        f"{record_name} reference does not resolve to an "
+                        "authoritative record."
+                    ),
+                    remediation_guidance=(
+                        "Restore or regenerate the missing authoritative record before "
+                        "export certification. Preserve the original broken reference "
+                        "for auditability."
+                    ),
+                )
+                self.exception_record_repository.save(exception_record)
+                return exception_record
+
+        return None
+
     def determine_trust_with_reconciliation(
         self,
         evidence_count,
