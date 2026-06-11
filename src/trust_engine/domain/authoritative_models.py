@@ -94,6 +94,9 @@ class ExceptionRecordV2:
     original_value:str
     expected_value:str
     exception_reason:str
+    remediation_guidance:str
+    status:str
+    active:bool
     created_timestamp:datetime
 
 
