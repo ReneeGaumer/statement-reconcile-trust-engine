@@ -205,6 +205,37 @@ def test_broken_audit_package_trust_record_reference_generates_reconstruction_fa
         reconstruction_exception.exception_id
     ) == reconstruction_exception
 
+
+def test_broken_audit_package_evidence_lineage_reference_generates_reconstruction_failure_exception():
+    engine = TrustEngine()
+    authorize_engine_rule_version(engine)
+
+    result = engine.determine_trust(
+        10,
+        [],
+        "statement.pdf",
+        evidence_lineage_metadata=complete_evidence_lineage_metadata(),
+    )
+
+    stored_audit_package = engine.audit_package_repository.records[
+        result["audit_package"].audit_package_id
+    ]
+    stored_audit_package.evidence_lineage_reference = "MISSING-EVIDENCE-LINEAGE"
+
+    reconstruction_exception = engine.generate_reconstruction_failure_exception(
+        result["audit_package"].audit_package_id
+    )
+
+    assert reconstruction_exception.rule_name == "AUDIT_PACKAGE_RECONSTRUCTION_REQUIRED"
+    assert reconstruction_exception.field_name == "evidence_lineage_reference"
+    assert reconstruction_exception.source_reference == result["audit_package"].audit_package_id
+    assert reconstruction_exception.original_value == "MISSING-EVIDENCE-LINEAGE"
+    assert reconstruction_exception.expected_value == "EXISTING_AUTHORITATIVE_RECORD"
+    assert "evidence lineage" in reconstruction_exception.exception_reason.lower()
+    assert engine.exception_record_repository.get(
+        reconstruction_exception.exception_id
+    ) == reconstruction_exception
+
 def test_broken_audit_chain_generates_reconstruction_failure_exception():
     engine = TrustEngine()
     authorize_engine_rule_version(engine)
