@@ -141,6 +141,24 @@ class TrustEngine:
                 "output": evidence_lineage.lineage_id,
             },
             {
+                "step": "EVIDENCE_SUFFICIENCY_EVALUATED",
+                "rule": self.evidence_sufficiency_evaluator.RULE_NAME,
+                "inputs": {
+                    "evidence_lineage_reference": evidence_lineage.lineage_id,
+                    "required_fields": list(
+                        self.evidence_sufficiency_evaluator.REQUIRED_FIELDS
+                    ),
+                },
+                "output": {
+                    "status": evidence_sufficiency_result.status,
+                    "findings": evidence_sufficiency_result.findings,
+                    "exception_record_references": [
+                        record.exception_id
+                        for record in evidence_sufficiency_result.generated_exceptions
+                    ],
+                },
+            },
+            {
                 "step": "TRUST_POLICY_SOURCE_LOADED",
                 "rule": "TRUST_MODEL_POLICY_SOURCE_METADATA_CAPTURED",
                 "inputs": {},
@@ -198,8 +216,9 @@ class TrustEngine:
             decision_explanation_reference=decision_explanation.decision_explanation_id,
             rule_version_reference=rule_version_reference,
             decision_rationale=(
-                "Trust classification derived from evidence lineage, exception "
-                "evaluation, trust score calculation, and embargo evaluation."
+                "Trust classification derived from evidence lineage, evidence "
+                "sufficiency evaluation, exception evaluation, trust score "
+                "calculation, and embargo evaluation."
             ),
             evidence_references=[evidence_lineage.lineage_id],
             exception_references=[record.exception_id for record in exception_records],
@@ -237,6 +256,7 @@ class TrustEngine:
 
         return {
             "evidence_lineage": evidence_lineage,
+            "evidence_sufficiency_result": evidence_sufficiency_result,
             "exception_records": exception_records,
             "trust_record": trust_record,
             "decision_ledger": decision_ledger,
@@ -290,10 +310,6 @@ class TrustEngine:
                 )
                 self.exception_record_repository.save(exception_record)
                 reconciliation_exception_records.append(exception_record)
-
-        reconciliation_exception_severities = [
-            trust_impact_severity for _ in reconciliation_exception_records
-        ]
 
         result = self.determine_trust(
             evidence_count,
