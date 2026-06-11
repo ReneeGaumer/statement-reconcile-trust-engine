@@ -410,6 +410,35 @@ class TrustEngine:
                 "trust record",
             ),
             (
+                "decision_ledger.evidence_references",
+                next(
+                    iter(resolved_records["decision_ledger_reference"].evidence_references),
+                    None,
+                ),
+                audit_package.evidence_lineage_reference,
+                "decision ledger",
+                "evidence lineage",
+            ),
+            (
+                "trust_record.evidence_lineage_reference",
+                resolved_records[
+                    "trust_record_reference"
+                ].evidence_lineage_reference,
+                audit_package.evidence_lineage_reference,
+                "trust record",
+                "evidence lineage",
+            ),
+            (
+                "decision_ledger.exception_references",
+                next(
+                    iter(resolved_records["decision_ledger_reference"].exception_references),
+                    None,
+                ),
+                next(iter(audit_package.exception_references), None),
+                "decision ledger",
+                "exception",
+            ),
+            (
                 "audit_package.rule_version_references",
                 next(iter(audit_package.rule_version_references), None),
                 resolved_records["decision_ledger_reference"].rule_version_reference,
@@ -448,6 +477,38 @@ class TrustEngine:
                 )
                 self.exception_record_repository.save(exception_record)
                 return exception_record
+
+        expected_decision_path_step = "EVIDENCE_LINEAGE_CREATED"
+        actual_decision_path_step = next(
+            iter(
+                resolved_records["decision_explanation_reference"].decision_path
+            ),
+            {},
+        ).get("step")
+
+        if actual_decision_path_step != expected_decision_path_step:
+            severity = self.policy.reconstruction_failure_severity()
+            exception_record = self.exception_record_factory.create(
+                severity.value,
+                self.policy.penalty_for(severity),
+                self.policy.AUDIT_RECONSTRUCTION_RULE,
+                source_reference=audit_package.audit_package_id,
+                field_name="decision_explanation.decision_path",
+                original_value=actual_decision_path_step,
+                expected_value=expected_decision_path_step,
+                exception_reason=(
+                    "Audit package cannot be reconstructed because the "
+                    "decision explanation decision path does not match the "
+                    "authoritative audit package chain."
+                ),
+                remediation_guidance=(
+                    "Restore the decision explanation path before export "
+                    "certification. Preserve the mismatched decision path step "
+                    "for auditability."
+                ),
+            )
+            self.exception_record_repository.save(exception_record)
+            return exception_record
 
         return None
 
