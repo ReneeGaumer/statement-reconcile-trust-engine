@@ -409,6 +409,13 @@ class TrustEngine:
                 "decision explanation",
                 "trust record",
             ),
+            (
+                "audit_package.rule_version_references",
+                next(iter(audit_package.rule_version_references), None),
+                resolved_records["decision_ledger_reference"].rule_version_reference,
+                "audit package",
+                "rule version",
+            ),
         )
 
         for (
