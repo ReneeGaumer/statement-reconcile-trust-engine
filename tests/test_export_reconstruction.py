@@ -95,6 +95,40 @@ def test_export_package_id_reconstructs_full_authoritative_chain():
     assert audit_package.export_classification == trust_record.trust_classification
 
 
+def test_broken_export_package_audit_package_reference_generates_reconstruction_failure_exception():
+    engine = TrustEngine()
+    authorize_engine_rule_version(engine)
+
+    result = engine.determine_trust(
+        10,
+        [],
+        "statement.pdf",
+        evidence_lineage_metadata=complete_evidence_lineage_metadata(),
+    )
+
+    stored_export_package = engine.export_package_repository.records[
+        result["export_package"].export_package_id
+    ]
+    stored_export_package.audit_package_reference = "MISSING-AUDIT-PACKAGE"
+
+    reconstruction_exception = (
+        engine.generate_export_reconstruction_failure_exception(
+            result["export_package"].export_package_id
+        )
+    )
+
+    assert reconstruction_exception.rule_name == "AUDIT_PACKAGE_RECONSTRUCTION_REQUIRED"
+    assert reconstruction_exception.field_name == "export_package.audit_package_reference"
+    assert reconstruction_exception.source_reference == result["export_package"].export_package_id
+    assert reconstruction_exception.original_value == "MISSING-AUDIT-PACKAGE"
+    assert reconstruction_exception.expected_value == "EXISTING_AUTHORITATIVE_RECORD"
+    assert "export package" in reconstruction_exception.exception_reason.lower()
+    assert "audit package" in reconstruction_exception.exception_reason.lower()
+    assert engine.exception_record_repository.get(
+        reconstruction_exception.exception_id
+    ) == reconstruction_exception
+
+
 def test_export_embargo_has_no_export_package_but_preserves_audit_chain():
     engine = TrustEngine()
     authorize_engine_rule_version(engine)
@@ -169,3 +203,116 @@ def test_broken_audit_chain_generates_reconstruction_failure_exception():
     assert engine.exception_record_repository.get(
         reconstruction_exception.exception_id
     ) == reconstruction_exception
+
+
+def test_mismatched_decision_ledger_trust_record_reference_generates_reconstruction_failure_exception():
+    engine = TrustEngine()
+    authorize_engine_rule_version(engine)
+
+    result = engine.determine_trust(
+        10,
+        [],
+        "statement.pdf",
+        evidence_lineage_metadata=complete_evidence_lineage_metadata(),
+    )
+
+    stored_decision_ledger = engine.decision_ledger_repository.records[
+        result["decision_ledger"].decision_id
+    ]
+    stored_decision_ledger.trust_record_reference = "MISMATCHED-TRUST-RECORD"
+
+    reconstruction_exception = engine.generate_reconstruction_failure_exception(
+        result["audit_package"].audit_package_id
+    )
+
+    assert reconstruction_exception.rule_name == "AUDIT_PACKAGE_RECONSTRUCTION_REQUIRED"
+    assert reconstruction_exception.field_name == "decision_ledger.trust_record_reference"
+    assert reconstruction_exception.source_reference == result["audit_package"].audit_package_id
+    assert reconstruction_exception.original_value == "MISMATCHED-TRUST-RECORD"
+    assert reconstruction_exception.expected_value == result["audit_package"].trust_record_reference
+    assert "decision ledger" in reconstruction_exception.exception_reason.lower()
+    assert "trust record" in reconstruction_exception.exception_reason.lower()
+    assert engine.exception_record_repository.get(
+        reconstruction_exception.exception_id
+    ) == reconstruction_exception
+
+
+def test_mismatched_decision_ledger_decision_explanation_reference_generates_reconstruction_failure_exception():
+    engine = TrustEngine()
+    authorize_engine_rule_version(engine)
+
+    result = engine.determine_trust(
+        10,
+        [],
+        "statement.pdf",
+        evidence_lineage_metadata=complete_evidence_lineage_metadata(),
+    )
+
+    stored_decision_ledger = engine.decision_ledger_repository.records[
+        result["decision_ledger"].decision_id
+    ]
+    stored_decision_ledger.decision_explanation_reference = (
+        "MISMATCHED-DECISION-EXPLANATION"
+    )
+
+    reconstruction_exception = engine.generate_reconstruction_failure_exception(
+        result["audit_package"].audit_package_id
+    )
+
+    assert reconstruction_exception.rule_name == "AUDIT_PACKAGE_RECONSTRUCTION_REQUIRED"
+    assert (
+        reconstruction_exception.field_name
+        == "decision_ledger.decision_explanation_reference"
+    )
+    assert reconstruction_exception.source_reference == result["audit_package"].audit_package_id
+    assert reconstruction_exception.original_value == "MISMATCHED-DECISION-EXPLANATION"
+    assert (
+        reconstruction_exception.expected_value
+        == result["audit_package"].decision_explanation_reference
+    )
+    assert "decision ledger" in reconstruction_exception.exception_reason.lower()
+    assert "decision explanation" in reconstruction_exception.exception_reason.lower()
+    assert engine.exception_record_repository.get(
+        reconstruction_exception.exception_id
+    ) == reconstruction_exception
+
+
+def test_mismatched_decision_explanation_trust_record_reference_generates_reconstruction_failure_exception():
+    engine = TrustEngine()
+    authorize_engine_rule_version(engine)
+
+    result = engine.determine_trust(
+        10,
+        [],
+        "statement.pdf",
+        evidence_lineage_metadata=complete_evidence_lineage_metadata(),
+    )
+
+    stored_decision_explanation = engine.decision_explanation_repository.records[
+        result["decision_explanation"].decision_explanation_id
+    ]
+    stored_decision_explanation.trust_record_reference = (
+        "MISMATCHED-TRUST-RECORD"
+    )
+
+    reconstruction_exception = engine.generate_reconstruction_failure_exception(
+        result["audit_package"].audit_package_id
+    )
+
+    assert reconstruction_exception.rule_name == "AUDIT_PACKAGE_RECONSTRUCTION_REQUIRED"
+    assert (
+        reconstruction_exception.field_name
+        == "decision_explanation.trust_record_reference"
+    )
+    assert reconstruction_exception.source_reference == result["audit_package"].audit_package_id
+    assert reconstruction_exception.original_value == "MISMATCHED-TRUST-RECORD"
+    assert (
+        reconstruction_exception.expected_value
+        == result["audit_package"].trust_record_reference
+    )
+    assert "decision explanation" in reconstruction_exception.exception_reason.lower()
+    assert "trust record" in reconstruction_exception.exception_reason.lower()
+    assert engine.exception_record_repository.get(
+        reconstruction_exception.exception_id
+    ) == reconstruction_exception
+

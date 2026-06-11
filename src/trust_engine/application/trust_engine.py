@@ -286,6 +286,41 @@ class TrustEngine:
             "exception_penalty": total_penalty,
         }
 
+    def generate_export_reconstruction_failure_exception(self, export_package_id):
+        export_package = self.export_package_repository.get(export_package_id)
+        if export_package is None:
+            raise ValueError(f"export package not found: {export_package_id}")
+
+        audit_package = self.audit_package_repository.get(
+            export_package.audit_package_reference
+        )
+        if audit_package is None:
+            severity = self.policy.reconstruction_failure_severity()
+            exception_record = self.exception_record_factory.create(
+                severity.value,
+                self.policy.penalty_for(severity),
+                self.policy.AUDIT_RECONSTRUCTION_RULE,
+                source_reference=export_package.export_package_id,
+                field_name="export_package.audit_package_reference",
+                original_value=export_package.audit_package_reference,
+                expected_value="EXISTING_AUTHORITATIVE_RECORD",
+                exception_reason=(
+                    "Export package cannot be reconstructed because the audit package "
+                    "reference does not resolve to an authoritative record."
+                ),
+                remediation_guidance=(
+                    "Restore or regenerate the missing audit package before export "
+                    "certification. Preserve the original broken export package "
+                    "reference for auditability."
+                ),
+            )
+            self.exception_record_repository.save(exception_record)
+            return exception_record
+
+        return self.generate_reconstruction_failure_exception(
+            export_package.audit_package_reference
+        )
+
     def generate_reconstruction_failure_exception(self, audit_package_id):
         audit_package = self.audit_package_repository.get(audit_package_id)
         if audit_package is None:
@@ -318,8 +353,11 @@ class TrustEngine:
             ),
         )
 
+        resolved_records = {}
+
         for field_name, reference, repository, record_name in reconstruction_checks:
-            if repository.get(reference) is None:
+            resolved_record = repository.get(reference)
+            if resolved_record is None:
                 severity = self.policy.reconstruction_failure_severity()
                 exception_record = self.exception_record_factory.create(
                     severity.value,
@@ -338,6 +376,67 @@ class TrustEngine:
                         "Restore or regenerate the missing authoritative record before "
                         "export certification. Preserve the original broken reference "
                         "for auditability."
+                    ),
+                )
+                self.exception_record_repository.save(exception_record)
+                return exception_record
+
+            resolved_records[field_name] = resolved_record
+
+        relationship_checks = (
+            (
+                "decision_ledger.trust_record_reference",
+                resolved_records["decision_ledger_reference"].trust_record_reference,
+                audit_package.trust_record_reference,
+                "decision ledger",
+                "trust record",
+            ),
+            (
+                "decision_ledger.decision_explanation_reference",
+                resolved_records[
+                    "decision_ledger_reference"
+                ].decision_explanation_reference,
+                audit_package.decision_explanation_reference,
+                "decision ledger",
+                "decision explanation",
+            ),
+            (
+                "decision_explanation.trust_record_reference",
+                resolved_records[
+                    "decision_explanation_reference"
+                ].trust_record_reference,
+                audit_package.trust_record_reference,
+                "decision explanation",
+                "trust record",
+            ),
+        )
+
+        for (
+            field_name,
+            actual_reference,
+            expected_reference,
+            source_record_name,
+            target_record_name,
+        ) in relationship_checks:
+            if actual_reference != expected_reference:
+                severity = self.policy.reconstruction_failure_severity()
+                exception_record = self.exception_record_factory.create(
+                    severity.value,
+                    self.policy.penalty_for(severity),
+                    self.policy.AUDIT_RECONSTRUCTION_RULE,
+                    source_reference=audit_package.audit_package_id,
+                    field_name=field_name,
+                    original_value=actual_reference,
+                    expected_value=expected_reference,
+                    exception_reason=(
+                        "Audit package cannot be reconstructed because the "
+                        f"{source_record_name} reference to the {target_record_name} "
+                        "does not match the authoritative audit package chain."
+                    ),
+                    remediation_guidance=(
+                        "Restore the authoritative-chain reference alignment before "
+                        "export certification. Preserve the mismatched reference for "
+                        "auditability."
                     ),
                 )
                 self.exception_record_repository.save(exception_record)
