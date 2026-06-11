@@ -9,9 +9,13 @@ from trust_engine.application.audit_package_factory import AuditPackageFactory
 from trust_engine.application.exception_record_factory import ExceptionRecordFactory
 from trust_engine.application.export_package_factory import ExportPackageFactory
 from trust_engine.application.decision_explanation_factory import DecisionExplanationFactory
+from trust_engine.application.evidence_sufficiency_evaluator import (
+    EvidenceSufficiencyEvaluator,
+)
 from trust_engine.application.reconciliation_trust_impact_evaluator import (
     ReconciliationTrustImpactEvaluator,
 )
+
 from trust_engine.application.trust_model_policy import TrustModelPolicy
 from trust_engine.application.governance_chain_resolver import GovernanceChainResolver
 from trust_engine.infrastructure.rule_version_repository import RuleVersionRepository
@@ -56,6 +60,10 @@ class TrustEngine:
         self.evidence_lineage_factory = EvidenceLineageFactory()
         self.audit_package_factory = AuditPackageFactory()
         self.exception_record_factory = ExceptionRecordFactory()
+        self.evidence_sufficiency_evaluator = EvidenceSufficiencyEvaluator(
+            self.exception_record_factory,
+            self.policy,
+        )
         self.export_package_factory = ExportPackageFactory()
         self.decision_explanation_factory = DecisionExplanationFactory()
         self.trust_record_repository = TrustRecordRepository()
