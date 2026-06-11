@@ -91,9 +91,15 @@ class TrustEngine:
         prebuilt_exception_records=None,
     ):
         rule_version_reference = self.policy.RULE_VERSION_REFERENCE
-        if not self.governance_chain_resolver.is_rule_authorized(rule_version_reference):
+        authorization_result = self.governance_chain_resolver.resolve_authorization(
+            rule_version_reference
+        )
+        if not authorization_result.authorized:
             raise PermissionError(
-                f"unauthorized rule version: {rule_version_reference}"
+                "unauthorized rule version: "
+                f"{authorization_result.rule_version_id}; "
+                f"{authorization_result.diagnostic_code}; "
+                f"{authorization_result.diagnostic_message}"
             )
 
         evidence_lineage = self.evidence_lineage_factory.create(

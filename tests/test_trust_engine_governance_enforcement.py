@@ -20,6 +20,19 @@ def test_trust_engine_rejects_missing_governance_before_trust_artifacts():
     assert engine.export_package_repository.all() == []
 
 
+def test_trust_engine_rejects_missing_governance_with_authority_diagnostics():
+    engine = TrustEngine()
+
+    try:
+        engine.determine_trust(10, [], "statement.pdf")
+        raise AssertionError("unauthorized governance should stop trust execution")
+    except PermissionError as error:
+        message = str(error)
+
+    assert engine.policy.RULE_VERSION_REFERENCE in message
+    assert "MISSING_RULE_VERSION" in message
+
+
 def test_trust_engine_allows_export_when_rule_version_is_authorized():
     engine = TrustEngine()
     authorize_engine_rule_version(engine)
