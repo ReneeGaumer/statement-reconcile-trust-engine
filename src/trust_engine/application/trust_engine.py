@@ -90,7 +90,14 @@ class TrustEngine:
             )
 
         evidence_lineage = self.evidence_lineage_factory.create(source_document_reference)
+        evidence_sufficiency_result = self.evidence_sufficiency_evaluator.evaluate(
+            evidence_lineage
+        )
         exception_records = list(prebuilt_exception_records or [])
+
+        for exception_record in evidence_sufficiency_result.generated_exceptions:
+            self.exception_record_repository.save(exception_record)
+            exception_records.append(exception_record)
 
         for severity in severities:
             penalty = self.exception_evaluator.penalty(severity)
