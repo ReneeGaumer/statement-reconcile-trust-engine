@@ -413,10 +413,11 @@ class TrustEngine:
             return exception_record
 
         for exception_reference in expected_exception_references:
-            if (
+            resolved_exception_record = (
                 self.exception_record_repository.get(exception_reference)
-                is None
-            ):
+            )
+
+            if resolved_exception_record is None:
                 severity = self.policy.reconstruction_failure_severity()
                 exception_record = self.exception_record_factory.create(
                     severity.value,
@@ -435,6 +436,29 @@ class TrustEngine:
                         "Restore or regenerate the missing exception record before "
                         "export certification. Preserve the original broken exception "
                         "reference for auditability."
+                    ),
+                )
+                self.exception_record_repository.save(exception_record)
+                return exception_record
+
+            if not resolved_exception_record.active:
+                severity = self.policy.reconstruction_failure_severity()
+                exception_record = self.exception_record_factory.create(
+                    severity.value,
+                    self.policy.penalty_for(severity),
+                    self.policy.AUDIT_RECONSTRUCTION_RULE,
+                    source_reference=audit_package.audit_package_id,
+                    field_name="exception_record.active",
+                    original_value=str(resolved_exception_record.active),
+                    expected_value="True",
+                    exception_reason=(
+                        "Audit package cannot be reconstructed because a referenced "
+                        "exception record is inactive."
+                    ),
+                    remediation_guidance=(
+                        "Restore the authoritative exception record state before "
+                        "export certification. Preserve the inactive exception "
+                        "record state for auditability."
                     ),
                 )
                 self.exception_record_repository.save(exception_record)
@@ -518,7 +542,11 @@ class TrustEngine:
             (
                 "decision_ledger.evidence_references",
                 next(
-                    iter(resolved_records["decision_ledger_reference"].evidence_references),
+                    iter(
+                        resolved_records[
+                            "decision_ledger_reference"
+                        ].evidence_references
+                    ),
                     None,
                 ),
                 audit_package.evidence_lineage_reference,

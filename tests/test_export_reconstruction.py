@@ -667,3 +667,28 @@ def test_duplicate_exception_record_reference_generates_reconstruction_failure_e
     ) == reconstruction_exception
 
 
+def test_inactive_exception_record_generates_reconstruction_failure_exception():
+    engine = TrustEngine()
+    authorize_engine_rule_version(engine)
+
+    result = engine.determine_trust(
+        10,
+        [Severity.WARNING],
+        "statement.pdf",
+        evidence_lineage_metadata=complete_evidence_lineage_metadata(),
+    )
+
+    exception_id = result["trust_record"].exception_record_references[0]
+
+    stored_exception = engine.exception_record_repository.records[
+        exception_id
+    ]
+    stored_exception.active = False
+
+    reconstruction_exception = engine.generate_reconstruction_failure_exception(
+        result["audit_package"].audit_package_id
+    )
+
+    assert reconstruction_exception is not None
+
+
