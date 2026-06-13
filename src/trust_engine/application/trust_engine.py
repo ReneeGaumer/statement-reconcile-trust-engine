@@ -387,6 +387,34 @@ class TrustEngine:
             "trust_record_reference"
         ].exception_record_references
 
+        for exception_reference in expected_exception_references:
+            if (
+                self.exception_record_repository.get(exception_reference)
+                is None
+            ):
+                severity = self.policy.reconstruction_failure_severity()
+                exception_record = self.exception_record_factory.create(
+                    severity.value,
+                    self.policy.penalty_for(severity),
+                    self.policy.AUDIT_RECONSTRUCTION_RULE,
+                    source_reference=audit_package.audit_package_id,
+                    field_name="exception_record_reference",
+                    original_value=exception_reference,
+                    expected_value="EXISTING_EXCEPTION_RECORD",
+                    exception_reason=(
+                        "Audit package cannot be reconstructed because the "
+                        "trust record references an exception record that "
+                        "does not exist."
+                    ),
+                    remediation_guidance=(
+                        "Restore or regenerate the missing exception record before "
+                        "export certification. Preserve the original broken exception "
+                        "reference for auditability."
+                    ),
+                )
+                self.exception_record_repository.save(exception_record)
+                return exception_record
+
         exception_reference_checks = (
             (
                 "decision_ledger.exception_references",
