@@ -529,13 +529,57 @@ def test_mismatched_decision_ledger_exception_references_generates_reconstructio
     assert reconstruction_exception.rule_name == "AUDIT_PACKAGE_RECONSTRUCTION_REQUIRED"
     assert reconstruction_exception.field_name == "decision_ledger.exception_references"
     assert reconstruction_exception.source_reference == result["audit_package"].audit_package_id
-    assert reconstruction_exception.original_value == "MISMATCHED-EXCEPTION"
-    assert reconstruction_exception.expected_value == result["audit_package"].exception_references[0]
+    assert reconstruction_exception.original_value == ["MISMATCHED-EXCEPTION"]
+    assert reconstruction_exception.expected_value == result["audit_package"].exception_references
     assert "decision ledger" in reconstruction_exception.exception_reason.lower()
     assert "exception" in reconstruction_exception.exception_reason.lower()
     assert engine.exception_record_repository.get(
         reconstruction_exception.exception_id
     ) == reconstruction_exception
+
+def test_mismatched_second_audit_package_exception_reference_generates_reconstruction_failure_exception():
+    engine = TrustEngine()
+    authorize_engine_rule_version(engine)
+
+    result = engine.determine_trust(
+        10,
+        [Severity.WARNING, Severity.CRITICAL],
+        "statement.pdf",
+        evidence_lineage_metadata=complete_evidence_lineage_metadata(),
+    )
+
+    stored_audit_package = engine.audit_package_repository.records[
+        result["audit_package"].audit_package_id
+    ]
+
+    original_exception_references = list(stored_audit_package.exception_references)
+    assert len(original_exception_references) >= 2
+
+    stored_audit_package.exception_references = [
+        original_exception_references[0],
+        "MISMATCHED-SECOND-EXCEPTION",
+    ]
+
+    reconstruction_exception = engine.generate_reconstruction_failure_exception(
+        result["audit_package"].audit_package_id
+    )
+
+    assert reconstruction_exception.rule_name == "AUDIT_PACKAGE_RECONSTRUCTION_REQUIRED"
+    assert reconstruction_exception.field_name == "audit_package.exception_references"
+    assert reconstruction_exception.source_reference == result["audit_package"].audit_package_id
+    assert reconstruction_exception.original_value == [
+        original_exception_references[0],
+        "MISMATCHED-SECOND-EXCEPTION",
+    ]
+    assert reconstruction_exception.expected_value == result[
+        "decision_ledger"
+    ].exception_references
+    assert "audit package" in reconstruction_exception.exception_reason.lower()
+    assert "exception" in reconstruction_exception.exception_reason.lower()
+    assert engine.exception_record_repository.get(
+        reconstruction_exception.exception_id
+    ) == reconstruction_exception
+
 
 
 

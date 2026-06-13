@@ -383,6 +383,59 @@ class TrustEngine:
 
             resolved_records[field_name] = resolved_record
 
+        expected_exception_references = resolved_records[
+            "trust_record_reference"
+        ].exception_record_references
+
+        exception_reference_checks = (
+            (
+                "decision_ledger.exception_references",
+                resolved_records["decision_ledger_reference"].exception_references,
+                "decision ledger",
+            ),
+            (
+                "decision_explanation.exception_record_references",
+                resolved_records[
+                    "decision_explanation_reference"
+                ].exception_record_references,
+                "decision explanation",
+            ),
+            (
+                "audit_package.exception_references",
+                audit_package.exception_references,
+                "audit package",
+            ),
+        )
+
+        for (
+            field_name,
+            actual_exception_references,
+            source_record_name,
+        ) in exception_reference_checks:
+            if actual_exception_references != expected_exception_references:
+                severity = self.policy.reconstruction_failure_severity()
+                exception_record = self.exception_record_factory.create(
+                    severity.value,
+                    self.policy.penalty_for(severity),
+                    self.policy.AUDIT_RECONSTRUCTION_RULE,
+                    source_reference=audit_package.audit_package_id,
+                    field_name=field_name,
+                    original_value=actual_exception_references,
+                    expected_value=expected_exception_references,
+                    exception_reason=(
+                        "Audit package cannot be reconstructed because the "
+                        f"{source_record_name} exception references do not match "
+                        "the authoritative trust record exception references."
+                    ),
+                    remediation_guidance=(
+                        "Restore exception reference alignment before export "
+                        "certification. Preserve the mismatched exception "
+                        "references for auditability."
+                    ),
+                )
+                self.exception_record_repository.save(exception_record)
+                return exception_record
+
         relationship_checks = (
             (
                 "decision_ledger.trust_record_reference",
@@ -427,16 +480,6 @@ class TrustEngine:
                 audit_package.evidence_lineage_reference,
                 "trust record",
                 "evidence lineage",
-            ),
-            (
-                "decision_ledger.exception_references",
-                next(
-                    iter(resolved_records["decision_ledger_reference"].exception_references),
-                    None,
-                ),
-                next(iter(audit_package.exception_references), None),
-                "decision ledger",
-                "exception",
             ),
             (
                 "audit_package.rule_version_references",
