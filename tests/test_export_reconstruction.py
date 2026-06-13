@@ -612,5 +612,58 @@ def test_missing_exception_record_reference_generates_reconstruction_failure_exc
     ) == reconstruction_exception
 
 
+def test_duplicate_exception_record_reference_generates_reconstruction_failure_exception():
+    engine = TrustEngine()
+    authorize_engine_rule_version(engine)
+
+    result = engine.determine_trust(
+        10,
+        [Severity.WARNING],
+        "statement.pdf",
+        evidence_lineage_metadata=complete_evidence_lineage_metadata(),
+    )
+
+    duplicate_exception_id = result["trust_record"].exception_record_references[0]
+    duplicate_exception_references = [
+        duplicate_exception_id,
+        duplicate_exception_id,
+    ]
+
+    stored_trust_record = engine.trust_record_repository.records[
+        result["trust_record"].trust_record_id
+    ]
+    stored_trust_record.exception_record_references = duplicate_exception_references
+
+    stored_decision_ledger = engine.decision_ledger_repository.records[
+        result["decision_ledger"].decision_id
+    ]
+    stored_decision_ledger.exception_references = duplicate_exception_references
+
+    stored_decision_explanation = engine.decision_explanation_repository.records[
+        result["decision_explanation"].decision_explanation_id
+    ]
+    stored_decision_explanation.exception_record_references = (
+        duplicate_exception_references
+    )
+
+    stored_audit_package = engine.audit_package_repository.records[
+        result["audit_package"].audit_package_id
+    ]
+    stored_audit_package.exception_references = duplicate_exception_references
+
+    reconstruction_exception = engine.generate_reconstruction_failure_exception(
+        result["audit_package"].audit_package_id
+    )
+
+    assert reconstruction_exception.rule_name == "AUDIT_PACKAGE_RECONSTRUCTION_REQUIRED"
+    assert reconstruction_exception.field_name == "trust_record.exception_record_references"
+    assert reconstruction_exception.source_reference == result["audit_package"].audit_package_id
+    assert reconstruction_exception.original_value == duplicate_exception_references
+    assert reconstruction_exception.expected_value == "UNIQUE_EXCEPTION_RECORD_REFERENCES"
+    assert "duplicate" in reconstruction_exception.exception_reason.lower()
+    assert "exception" in reconstruction_exception.exception_reason.lower()
+    assert engine.exception_record_repository.get(
+        reconstruction_exception.exception_id
+    ) == reconstruction_exception
 
 

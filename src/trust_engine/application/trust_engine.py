@@ -387,6 +387,31 @@ class TrustEngine:
             "trust_record_reference"
         ].exception_record_references
 
+        if len(expected_exception_references) != len(
+            set(expected_exception_references)
+        ):
+            severity = self.policy.reconstruction_failure_severity()
+            exception_record = self.exception_record_factory.create(
+                severity.value,
+                self.policy.penalty_for(severity),
+                self.policy.AUDIT_RECONSTRUCTION_RULE,
+                source_reference=audit_package.audit_package_id,
+                field_name="trust_record.exception_record_references",
+                original_value=expected_exception_references,
+                expected_value="UNIQUE_EXCEPTION_RECORD_REFERENCES",
+                exception_reason=(
+                    "Audit package cannot be reconstructed because the "
+                    "trust record contains duplicate exception record "
+                    "references."
+                ),
+                remediation_guidance=(
+                    "Remove duplicate exception references while preserving "
+                    "all original reconstruction evidence for auditability."
+                ),
+            )
+            self.exception_record_repository.save(exception_record)
+            return exception_record
+
         for exception_reference in expected_exception_references:
             if (
                 self.exception_record_repository.get(exception_reference)
