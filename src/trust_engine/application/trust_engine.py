@@ -464,6 +464,29 @@ class TrustEngine:
                 self.exception_record_repository.save(exception_record)
                 return exception_record
 
+            if not resolved_exception_record.rule_name.strip():
+                severity = self.policy.reconstruction_failure_severity()
+                exception_record = self.exception_record_factory.create(
+                    severity.value,
+                    self.policy.penalty_for(severity),
+                    self.policy.AUDIT_RECONSTRUCTION_RULE,
+                    source_reference=audit_package.audit_package_id,
+                    field_name="exception_record.rule_name",
+                    original_value=resolved_exception_record.rule_name,
+                    expected_value="NONBLANK_RULE_NAME",
+                    exception_reason=(
+                        "Audit package cannot be reconstructed because a referenced "
+                        "exception record does not contain a governing rule name."
+                    ),
+                    remediation_guidance=(
+                        "Restore the authoritative exception rule reference before "
+                        "export certification. Preserve the original exception "
+                        "record content for auditability."
+                    ),
+                )
+                self.exception_record_repository.save(exception_record)
+                return exception_record
+
         exception_reference_checks = (
             (
                 "decision_ledger.exception_references",
